@@ -1,5 +1,7 @@
 package tetris;
 
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -8,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * @author jake pommainville and rohan dave
@@ -16,6 +19,11 @@ import javafx.stage.Stage;
  */
 public class Main extends Application{
 
+	private GridPane grdTetris;
+	
+	private Grid grid;
+	private int shapeSpeed;
+	
 	final private static int SIZE = 30;
 	final private static int SPACE = 3;
 	
@@ -23,7 +31,7 @@ public class Main extends Application{
 	public void start(Stage stage) throws Exception {
 		
 		// creating the gridpane to serve as the grid for the tetris blocks
-		GridPane grdTetris = new GridPane();
+		grdTetris = new GridPane();
 		// sets the spacing
 		grdTetris.setVgap(SIZE);
 		grdTetris.setHgap(SIZE);
@@ -47,6 +55,8 @@ public class Main extends Application{
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
 		
+		startNewGame();
+		
 		// setting the scene to the scene
 		stage.setScene(scene);
 		// changing the title
@@ -55,6 +65,32 @@ public class Main extends Application{
 		stage.show();
 	}
 	
+	private void startNewGame() {
+		grid = new Grid();
+		shapeSpeed = grid.getSpeed();
+		
+		updateGridColor();
+		updateBlocks();
+		
+	}
+
+	private void updateBlocks() {
+		grdTetris.getChildren().clear();
+		
+		SequentialTransition shapeTransition = new SequentialTransition();
+		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
+		pauseTransition.setOnFinished(e -> {
+			grid.moveDown();
+			updateGridColor();
+		});
+		
+	}
+
+	private void updateGridColor() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public static void main(String args[]) {
 		launch(args);
 	}

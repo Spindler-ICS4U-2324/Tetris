@@ -84,4 +84,8 @@ public class Grid {
 	public int getSpeed() {
 		return speed;
 	}
+
+	public void moveDown() {
+		
+	}
 }
