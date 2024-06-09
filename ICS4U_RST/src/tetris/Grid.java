@@ -1,6 +1,7 @@
 package tetris;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 public class Grid {
 	/**
@@ -65,10 +66,70 @@ public class Grid {
 		
 		currentShape = new Shape();
 	}
+	
+	/**
+	 * a method to get every block in the tetris grid
+	 * 
+	 * @return
+	 * an {@code ArrayList} with every block on the tetris grid
+	 */
+	public ArrayList<Block> getBlocks() {
+		ArrayList<Block> blocks = new ArrayList<Block>();
+		
+		blocks.addAll(this.blocks);
+		blocks.addAll(currentShape.getBlocks());
+		
+		return blocks;
+	}
+	
+	/**
+	 * checks each row of the grid to determine if a line is formed and adjusts the score, deletes the line, 
+	 * and moves every block above the line down
+	 */
+	private void checkLines() {
+		ArrayList<Integer> fullLines = new ArrayList<Integer>();
+		
+		for (int i = 0; i < HEIGHT; i++) {
+			boolean fullLine = true;
+			
+			for (int j = 0; j < WIDTH; j++) {
+				if (!blocks.contains(new Block(j,i))) {
+					fullLine = false;
+				}
+			}
+			
+			if (fullLine) {
+				fullLines.add(i);
+			}
+		}
+		
+		if (fullLines.size() != 0 ) {
+			numClearedLines += fullLines.size();
+			
+			for (int i : fullLines) {
+				
+				Predicate<Block> checkY = e -> e.getY() == i;
+				blocks.removeIf(checkY);
+				
+				for (int j = 0; j < blocks.size(); j++) {
+					if (blocks.get(j).getY() < i) {
+						blocks.get(j).modY()
+					}
+				}
+			}
+		}
+		
+	}
 
-
+	/**
+	 * Creates a new shape and saves the current shape into the grid
+	 */
 	private void createNewShape() {
 		int randomNumber = (int) Math.random()*7+1;
+		
+		if (currentShape != null) 
+			blocks.addAll(currentShape.getBlocks());
+		
 		
 		currentShape = nextShape;
 		
@@ -85,7 +146,84 @@ public class Grid {
 		return speed;
 	}
 
+	/**
+	 * moves the current shape down
+	 */
 	public void moveDown() {
 		
+	}
+	
+	/**
+	 * moves the current shape to the left
+	 */
+	public void moveLeft() {
+		
+	}
+	
+	/**
+	 * moves the current shape to the right
+	 */
+	public void moveRight() {
+		
+	}
+	
+	/**
+	 * checks if the shape is touching the bottom
+	 * 
+	 * @return
+	 * a {@code Boolean} where true is if the shape is touching the bottom and false is if it is not
+	 */
+	private boolean checkBottom() {
+		return false;
+	}
+	
+	/**
+	 * checks if the shape is touching the left side of the grid
+	 * 
+	 * @return
+	 * a {@code Boolean} where true is if the shape is touching the left side of the grid and false is if it is not
+	 */
+	private boolean checkLeft() {
+		return false;
+	}
+	
+	/**
+	 * checks if the shape is touching the right side of the grid
+	 * 
+	 * @return
+	 * a {@code Boolean} where true is if the shape is touching the right side of the grid and false is if it is not
+	 */
+	private boolean checkRight() {
+		return false;
+	}
+	
+	/**
+	 * checks if there are blocks below the current shape
+	 * 
+	 * @return
+	 * a {@code boolean} true if there are blocks below and false if there are not
+	 */
+	private boolean checkBlocksBelow() {
+		return false;
+	}
+	
+	/**
+	 * checks if there are blocks to the left of the current shape
+	 * 
+	 * @return
+	 * a {@code boolean} true if there are blocks to the left and false if there are not
+	 */
+	private boolean checkBlocksLeft() {
+		return false;
+	}
+	
+	/**
+	 * checks if there are blocks to the right of the current shape
+	 * 
+	 * @return
+	 * a {@code boolean} true if there are blocks to the right and false if there are not
+	 */
+	private boolean checkBlocksRight() {
+		return false;
 	}
 }

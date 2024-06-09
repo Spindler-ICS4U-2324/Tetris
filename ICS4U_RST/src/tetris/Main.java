@@ -71,7 +71,6 @@ public class Main extends Application{
 		
 		updateGridColor();
 		updateBlocks();
-		
 	}
 
 	private void updateBlocks() {
