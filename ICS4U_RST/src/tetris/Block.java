@@ -14,7 +14,7 @@ public class Block {
 	private int x;  // x-coordinate of block
 	private int y;  // y-coordinate of block
 	private int type;  // Colour of the block
-	
+
 	/**
 	 * The default constructor method to create a block
 	 * @param xCoordinate
@@ -26,7 +26,7 @@ public class Block {
 		x = xCoordinate;
 		y = yCoordinate;  // Assigns the private variables the variables passed through the constructor method
 	}
-	
+
 	/**
 	 * An overloaded constructor method to create a block
 	 * @param xCoordinate
@@ -44,7 +44,7 @@ public class Block {
 		y = yCoordinate;  // Assigns the private variables the variables passed through the constructor method
 		type = shapeType;  // Assigns shapeType to type, representing the type of block
 	}
-	
+
 	/**
 	 * A mutator method which allows the y-coordinate of the block to be changed
 	 * @param shift
@@ -55,6 +55,13 @@ public class Block {
 	}
 	
 	/**
+	 * A mutator method which allows the y-coordinate of the block to be increased by 1 (move down)
+	 */
+	public void modY() {
+		y += 1;  // Changes the block's y-coordinate
+	}
+
+	/**
 	 * A mutator method which allows the x-coordinate of the block to be changed
 	 * @param shift
 	 * 		An <code>int</code> containing the amount by which the user wants to shift the block in the x-axis
@@ -63,6 +70,8 @@ public class Block {
 		x += shift;  // Changes the block's x-coordinate
 	}
 	
+	
+
 	/**
 	 * Accessor method which allows users to get the y-coordinate of the block
 	 * @return An <code>int</code> containing the y-coordinate of the block
@@ -70,7 +79,7 @@ public class Block {
 	public int getY() {
 		return y;  // Returns the y-coordinate of the block
 	}
-	
+
 	/**
 	 * Accessor method which allows users to get the x-coordinate of the block
 	 * @return An <code>int</code> containing the x-coordinate of the block
@@ -78,15 +87,17 @@ public class Block {
 	public int getX() {
 		return x;  // Returns the x-coordinate of the block
 	}
-	
+
 	/**
 	 * Accessor method which allows users to get the type of the block
-	 * @return An <code>int</code> containing the type of the block
+	 * @return An <code>int</code> containing the type of the block. An <code>int</code> containing the type of block. <code>1</code> represents a line block, 
+	 * <code>2</code> represents an L-block, <code>3</code> represents a J-block, <code>4</code> represents a square block,
+	 * <code>5</code> represents an S-block, <code>6</code> represents a T-block, <code>7</code> represents a Z-block.
 	 */
 	public int getType() {
 		return type;  // Returns the type of the block
 	}
-	
+
 	/** 
 	 * Mutator method which sets types of blocks
 	 * @param type
@@ -96,7 +107,24 @@ public class Block {
 	 */
 	public void setType(int type) {
 		this.type = type;
-		
+
 	}
-	
+
+	/**
+	 * Overrided equals method which compares blocks
+	 * @param obj
+	 * 		An <code>Object</code> which will be compared to the block
+	 * @return A <code>boolean</code> which represents if the object is equal to the one being compared
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Block) {   // If the object is a block
+			if (((Block) obj).x == x && ((Block) obj).y == y) {  // If the x and y coordinates are the same
+				return true;  // Return true
+			}
+		}
+
+		return false;  // If none of previous conditions are met, return false
+	}
+
 }
