@@ -26,7 +26,7 @@ public class Shape {
 		type = shapeType;
 		rotation = 0;
 		blocks = new ArrayList<Block>();
-		
+
 		createShape();
 	}
 
@@ -93,7 +93,7 @@ public class Shape {
 			break;
 		}
 	}
-	
+
 	/**
 	 * Moves the shape down by moving individual blocks
 	 */
@@ -102,7 +102,7 @@ public class Shape {
 			currentBlock.modY();
 		}
 	}
-	
+
 	/**
 	 * Accessor method which returns the arrayList which stores the blocks in the shape
 	 * @return An <code>ArrayList</code> containing all the blocks in the shape
@@ -110,7 +110,7 @@ public class Shape {
 	public ArrayList<Block> getBlocks() {
 		return blocks;
 	}
-	
+
 	/**
 	 * Moves the shape left
 	 */
@@ -119,7 +119,7 @@ public class Shape {
 			currentBlock.modX(-1);
 		}
 	}
-	
+
 	/**
 	 * Moves the shape right
 	 */
@@ -129,4 +129,80 @@ public class Shape {
 		}
 	}
 
+	/**
+	 * A method which rotates a shape 90 degrees counter clockwise
+	 * @param gridWidth
+	 * 		An {@code int} representing how many squares (spaces in grid) wide the tetris grid is
+	 */
+	public void rotateCounterClockwise(int gridWidth) {
+		// Variable Definition
+		int centralX = blocks.get(1).getX();  // Gets the x coordinate for the block which the shape will be rotated
+											  // about
+		int centralY = blocks.get(1).getY();  // Gets the y coordinate for the block which the shape will be rotated
+											  // about
+		int relativeX;  // Relative x and y when viewing the central x and y as the origin
+		int relativeY;
+		int translatedX;  // Translated coordinates (90 degree shift) of the block compared to the relative origin
+		int translatedY;
+		boolean isLeftBreached;  // Boolean variables which track if the shape exceeds the left or right boundary after
+		boolean isRightBreached;  // being rotated.
+
+		for (Block currentBlock : blocks) {
+			relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
+			relativeY = currentBlock.getY() - centralY;
+
+			translatedX = relativeY;   // Uses (y,-x) to rotate the block 90 degrees counter clockwise
+			translatedY = -relativeX;
+
+			currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
+			currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
+
+			if (currentBlock.getX() < 0) {  // If a coordinate is less than 0, it's out of bounds to the left
+				isLeftBreached = true;
+
+			} else if (currentBlock.getX() > (gridWidth - 1)) {  // If a coordinate is greater than gridWidth-1, it's
+				isRightBreached = true;       // out of bounds to the right.
+
+			}
+		}
+
+		//TODO - Keep moving the shape right or left until the whole shape is in the bounds of the tetris grid
+		
+		for (Block currentBlock : blocks) {
+			
+		}
+
+	}
+
+	/**
+	 * A method which rotates a shape 90 degrees clockwise
+	 * @param gridWidth
+	 * 		An {@code int} representing how many squares (spaces in grid) wide the tetris grid is
+	 */
+	public void rotateClockwise(int gridWidth) {
+		// Variable Definition
+		int centralX = blocks.get(1).getX();  // Gets the x coordinate for the block which the shape will be rotated
+											  // about
+		int centralY = blocks.get(1).getY();  // Gets the y coordinate for the block which the shape will be rotated
+											  // about
+		int relativeX;  // Relative x and y when viewing the central x and y as the origin
+		int relativeY;
+		int translatedX;  // Translated coordinates (90 degree shift) of the block compared to the relative origin
+		int translatedY;
+
+		for (Block currentBlock : blocks) {
+			relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
+			relativeY = currentBlock.getY() - centralY;
+
+			translatedX = -relativeY;   // Uses (y,-x) to rotate the block 90 degrees clockwise
+			translatedY = relativeX;
+
+			currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
+			currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
+
+		}
+
+	}
+
 }
+ 
