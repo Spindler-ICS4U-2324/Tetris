@@ -46,6 +46,24 @@ public class Block {
 	}
 
 	/**
+	 * A mutator method which allows the x coordinate of the block to be changed
+	 * @param xCoordinate
+	 * 		An <code>int</code> which contains the x coordinate of the block will be changed to 
+	 */
+	public void setX(int xCoordinate) {
+		x = xCoordinate;
+	}
+	
+	/**
+	 * A mutator method which allows the x coordinate of the block to be changed
+	 * @param xCoordinate
+	 * 		An <code>int</code> which contains the x coordinate of the block will be changed to 
+	 */
+	public void setY(int yCoordinate) {
+		y = yCoordinate;
+	}
+	
+	/**
 	 * A mutator method which allows the y-coordinate of the block to be changed
 	 * @param shift
 	 * 		An <code>int</code> containing the amount by which the user wants to shift the block in the y-axis
