@@ -26,6 +26,8 @@ public class Shape {
 		type = shapeType;
 		rotation = 0;
 		blocks = new ArrayList<Block>();
+		
+		createShape();
 	}
 
 	/**
@@ -35,58 +37,58 @@ public class Shape {
 	public void createShape() {
 		switch (type) {
 		case 1:    // Line block
+			this.blocks.add(new Block(3, 0, type));
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
 			this.blocks.add(new Block(6, 0, type));
-			this.blocks.add(new Block(7, 0, type));
 
 			break;
 
 		case 2:  // L-block
+			this.blocks.add(new Block(3, 1, type));
 			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(5, 1, type));
-			this.blocks.add(new Block(6, 1, type));
-			this.blocks.add(new Block(6, 0, type));
+			this.blocks.add(new Block(5, 0, type));
 
 			break;
 
 		case 3:  // J-block
+			this.blocks.add(new Block(3, 1, type));
 			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(5, 1, type));
-			this.blocks.add(new Block(6, 1, type));
-			this.blocks.add(new Block(4, 0, type));
+			this.blocks.add(new Block(3, 0, type));
 
 			break;
 
 		case 4:  // Square block
+			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
-			this.blocks.add(new Block(6, 0, type));
+			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(5, 1, type));
-			this.blocks.add(new Block(6, 1, type));
 
 			break;
 
 		case 5:  // S-block
+			this.blocks.add(new Block(3, 1, type));
 			this.blocks.add(new Block(4, 1, type));
-			this.blocks.add(new Block(5, 1, type));
+			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
-			this.blocks.add(new Block(6, 0, type));
 
 			break;
 
 		case 6:  // T-block
+			this.blocks.add(new Block(3, 0, type));
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
-			this.blocks.add(new Block(6, 0, type));
-			this.blocks.add(new Block(5, 1, type));
+			this.blocks.add(new Block(4, 1, type));
 
 			break;
 
 		case 7:  // Z-block
+			this.blocks.add(new Block(3, 0, type));
 			this.blocks.add(new Block(4, 0, type));
-			this.blocks.add(new Block(5, 0, type));
+			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(5, 1, type));
-			this.blocks.add(new Block(6, 1, type));
 
 			break;
 		}

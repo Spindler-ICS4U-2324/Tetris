@@ -58,13 +58,13 @@ public class Grid {
 		
 		int randomNumber;
 		
-		randomNumber = (int) Math.random()*7+1;
+		randomNumber = (int) (Math.random()*7)+1;
 		
-		nextShape = new Shape();
+		nextShape = new Shape(randomNumber);
 
-		randomNumber = (int) Math.random()*7+1;
+		randomNumber = (int) (Math.random()*7)+1;
 		
-		currentShape = new Shape();
+		currentShape = new Shape(randomNumber);
 	}
 	
 	/**
@@ -113,7 +113,7 @@ public class Grid {
 				
 				for (int j = 0; j < blocks.size(); j++) {
 					if (blocks.get(j).getY() < i) {
-						blocks.get(j).modY()
+						blocks.get(j).modY();
 					}
 				}
 			}
@@ -125,15 +125,14 @@ public class Grid {
 	 * Creates a new shape and saves the current shape into the grid
 	 */
 	private void createNewShape() {
-		int randomNumber = (int) Math.random()*7+1;
+		int randomNumber = (int) (Math.random()*7)+1;
 		
 		if (currentShape != null) 
 			blocks.addAll(currentShape.getBlocks());
 		
-		
 		currentShape = nextShape;
 		
-		nextShape = new Shape();
+		nextShape = new Shape(randomNumber);
 	}
 
 	/**
@@ -150,21 +149,30 @@ public class Grid {
 	 * moves the current shape down
 	 */
 	public void moveDown() {
-		
+		if (!checkBottom() && !checkBlocksBelow()) {
+			currentShape.moveDown();
+		} else {
+			createNewShape();
+			checkLines();
+		}
 	}
 	
 	/**
 	 * moves the current shape to the left
 	 */
 	public void moveLeft() {
-		
+		if (!checkLeft() && !checkBlocksLeft()) {
+			currentShape.moveLeft();
+		}
 	}
 	
 	/**
 	 * moves the current shape to the right
 	 */
 	public void moveRight() {
-		
+		if (!checkRight() && !checkBlocksRight()) {
+			currentShape.moveRight();
+		}
 	}
 	
 	/**
@@ -174,6 +182,11 @@ public class Grid {
 	 * a {@code Boolean} where true is if the shape is touching the bottom and false is if it is not
 	 */
 	private boolean checkBottom() {
+		for (Block i : currentShape.getBlocks()) {
+			if (i.getY() == HEIGHT - 1) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -184,6 +197,11 @@ public class Grid {
 	 * a {@code Boolean} where true is if the shape is touching the left side of the grid and false is if it is not
 	 */
 	private boolean checkLeft() {
+		for (Block i : currentShape.getBlocks()) {
+			if (i.getX() == 0) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -194,6 +212,11 @@ public class Grid {
 	 * a {@code Boolean} where true is if the shape is touching the right side of the grid and false is if it is not
 	 */
 	private boolean checkRight() {
+		for (Block i : currentShape.getBlocks()) {
+			if (i.getX() == WIDTH - 1) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -204,6 +227,11 @@ public class Grid {
 	 * a {@code boolean} true if there are blocks below and false if there are not
 	 */
 	private boolean checkBlocksBelow() {
+		for (Block i : currentShape.getBlocks()) {
+			if (blocks.contains(new Block(i.getX(), i.getY()+1))) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -214,6 +242,11 @@ public class Grid {
 	 * a {@code boolean} true if there are blocks to the left and false if there are not
 	 */
 	private boolean checkBlocksLeft() {
+		for (Block i : currentShape.getBlocks()) {
+			if (blocks.contains(new Block(i.getX()-1, i.getY()))) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -224,6 +257,11 @@ public class Grid {
 	 * a {@code boolean} true if there are blocks to the right and false if there are not
 	 */
 	private boolean checkBlocksRight() {
+		for (Block i : currentShape.getBlocks()) {
+			if (blocks.contains(new Block(i.getX()+1, i.getY()))) {
+				return true;
+			}
+		}
 		return false;
 	}
 }

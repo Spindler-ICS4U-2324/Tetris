@@ -1,14 +1,21 @@
 package tetris;
 
+import java.util.ArrayList;
+
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -33,8 +40,8 @@ public class Main extends Application{
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdTetris = new GridPane();
 		// sets the spacing
-		grdTetris.setVgap(SIZE);
-		grdTetris.setHgap(SIZE);
+		grdTetris.setVgap(SPACE);
+		grdTetris.setHgap(SPACE);
 		grdTetris.setPadding(new Insets(SPACE));
 		grdTetris.setGridLinesVisible(true);
 		
@@ -55,6 +62,19 @@ public class Main extends Application{
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
 		
+		scene.setOnKeyPressed(e -> {
+			if (e.getCode().equals(KeyCode.S)) {
+				grid.moveDown();
+				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.A)) {
+				grid.moveLeft();
+				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.D)) {
+				grid.moveRight();
+				updateGridColor();
+			}
+		});
+		
 		startNewGame();
 		
 		// setting the scene to the scene
@@ -65,6 +85,9 @@ public class Main extends Application{
 		stage.show();
 	}
 	
+	/**
+	 * starts a new game
+	 */
 	private void startNewGame() {
 		grid = new Grid();
 		shapeSpeed = grid.getSpeed();
@@ -73,8 +96,12 @@ public class Main extends Application{
 		updateBlocks();
 	}
 
+	
+	/**
+	 * moves the blocks down after a specified time
+	 */
 	private void updateBlocks() {
-		grdTetris.getChildren().clear();
+		shapeSpeed = grid.getSpeed();
 		
 		SequentialTransition shapeTransition = new SequentialTransition();
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
@@ -83,11 +110,37 @@ public class Main extends Application{
 			updateGridColor();
 		});
 		
+		shapeTransition.getChildren().add(pauseTransition);
+		shapeTransition.setCycleCount(Timeline.INDEFINITE);
+		shapeTransition.play();
 	}
 
+	/**
+	 * updates each cell on the grid and changes it's color based on the block
+	 */
 	private void updateGridColor() {
-		// TODO Auto-generated method stub
+		grdTetris.getChildren().clear();
 		
+		ArrayList<Block> blocks = grid.getBlocks();
+		
+		for (int i = 0; i < grid.HEIGHT; i++) {
+			for (int j = 0; j < grid.WIDTH; j++) {
+				Block currentBlock = new Block(j, i);
+				Group group = new Group();
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				
+				if (blocks.contains(currentBlock)) {
+					square.setFill(Color.BLUE);
+				} else {
+					square.setFill(Color.LIGHTGRAY);
+				}
+				
+				group.getChildren().add(square);
+				
+				grdTetris.add(group, j, i);
+			}
+		}
 	}
 
 	public static void main(String args[]) {
