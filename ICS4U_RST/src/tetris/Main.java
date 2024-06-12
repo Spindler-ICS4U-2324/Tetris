@@ -31,6 +31,10 @@ public class Main extends Application{
 	private Grid grid;
 	private int shapeSpeed;
 	
+	SequentialTransition shapeTransition;
+
+	private boolean running;
+	
 	final private static int SIZE = 30;
 	final private static int SPACE = 3;
 	
@@ -72,6 +76,12 @@ public class Main extends Application{
 			} else if (e.getCode().equals(KeyCode.D)) {
 				grid.moveRight();
 				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.Q)) {
+				grid.rotateLeft();
+				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.E)) {
+				grid.rotateRight();
+				updateGridColor();
 			}
 		});
 		
@@ -103,7 +113,7 @@ public class Main extends Application{
 	private void updateBlocks() {
 		shapeSpeed = grid.getSpeed();
 		
-		SequentialTransition shapeTransition = new SequentialTransition();
+		shapeTransition = new SequentialTransition();
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
 		pauseTransition.setOnFinished(e -> {
 			grid.moveDown();
@@ -119,27 +129,58 @@ public class Main extends Application{
 	 * updates each cell on the grid and changes it's color based on the block
 	 */
 	private void updateGridColor() {
-		grdTetris.getChildren().clear();
-		
-		ArrayList<Block> blocks = grid.getBlocks();
-		
-		for (int i = 0; i < grid.HEIGHT; i++) {
-			for (int j = 0; j < grid.WIDTH; j++) {
-				Block currentBlock = new Block(j, i);
-				Group group = new Group();
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				
-				if (blocks.contains(currentBlock)) {
-					square.setFill(Color.BLUE);
-				} else {
-					square.setFill(Color.LIGHTGRAY);
-				}
-				
-				group.getChildren().add(square);
-				
-				grdTetris.add(group, j, i);
+		if (!grid.getGameOver()) {
+			grdTetris.getChildren().clear();
+			
+			if (shapeSpeed != grid.getSpeed()) {
+				shapeTransition.stop();
+				updateBlocks();
 			}
+			
+			ArrayList<Block> blocks = grid.getBlocks();
+			
+			for (int i = 0; i < Grid.HEIGHT; i++) {
+				for (int j = 0; j < Grid.WIDTH; j++) {
+					Block currentBlock = new Block(j, i);
+					Group group = new Group();
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					
+					if (blocks.contains(currentBlock)) {
+						switch (blocks.get(blocks.indexOf(currentBlock)).getType()) {
+							case 1:
+								square.setFill(Color.DEEPSKYBLUE);
+								break;
+							case 2:
+								square.setFill(Color.ORANGE);
+								break;
+							case 3:
+								square.setFill(Color.BLUE);
+								break;
+							case 4:
+								square.setFill(Color.YELLOW);
+								break;
+							case 5:
+								square.setFill(Color.RED);
+								break;
+							case 6:
+								square.setFill(Color.PURPLE);
+								break;
+							case 7:
+								square.setFill(Color.FORESTGREEN);
+								break;
+						}
+					} else {
+						square.setFill(Color.LIGHTGRAY);
+					}
+					
+					group.getChildren().add(square);
+					
+					grdTetris.add(group, j, i);
+				}
+			}
+		} else {
+			startNewGame();
 		}
 	}
 

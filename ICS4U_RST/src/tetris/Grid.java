@@ -3,6 +3,8 @@ package tetris;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
+import simpleIO.Console;
+
 public class Grid {
 	/**
 	 * a {@code boolean} for the status of the game
@@ -51,7 +53,7 @@ public class Grid {
 	Grid() {
 		this.blocks = new ArrayList<Block>();
 		this.gameOver = false;
-		this.numClearedLines = 0;
+		this.numClearedLines = 9;
 		this.level = 0;
 		this.score = 0;
 		this.speed = 800;
@@ -105,6 +107,7 @@ public class Grid {
 		
 		if (fullLines.size() != 0 ) {
 			numClearedLines += fullLines.size();
+			calculateScore(fullLines.size());
 			
 			for (int i : fullLines) {
 				
@@ -119,6 +122,54 @@ public class Grid {
 			}
 		}
 		
+		level = numClearedLines / 10;
+		
+		updateSpeed();
+		
+		Console.print("Cleared Lines: "+numClearedLines);
+		Console.print("Level: "+level);
+		Console.print("Score: "+score);
+		Console.print("Game Speed (ms): "+speed);
+		Console.print();
+	}
+
+	/**
+	 * updates the speed of the game based on the current level
+	 */
+	private void updateSpeed() {
+		double time = 48.0;
+		
+		if (-1 < level && level < 9) {
+			speed = (int) (((time - (level * 5.0)) / 60.0) * 1000.0);
+		} else if (level == 9) {
+			speed = (int) (100);
+		} else if (9 < level && level < 19) {
+			speed = (int) (66.6666666667);
+		} else if (18 < level && level < 29) {
+			speed = (int) (33.3333333333);
+		} else {
+			speed = (int) (16.6666666667);
+		}
+	}
+
+	/**
+	 * updates the score according to the number of lines cleared
+	 * 
+	 * @param numClearedLines
+	 * an {@code int} for the number of lines cleared
+	 */
+	private void calculateScore(int numClearedLines) {
+		int lineMultiplier = 40;
+		
+		if (numClearedLines == 2) {
+			lineMultiplier = 100;
+		} else if (numClearedLines == 3) {
+			lineMultiplier = 300;
+		} else if (numClearedLines >= 4) {
+			lineMultiplier = 1000;
+		}
+		
+		score += lineMultiplier * (level + 1);
 	}
 
 	/**
@@ -144,6 +195,14 @@ public class Grid {
 	public int getSpeed() {
 		return speed;
 	}
+	
+	/**
+	 * @return
+	 * returns a {@code boolean} for the status of the game
+	 */
+	public boolean getGameOver() {
+		return gameOver;
+	}
 
 	/**
 	 * moves the current shape down
@@ -152,11 +211,14 @@ public class Grid {
 		if (!checkBottom() && !checkBlocksBelow()) {
 			currentShape.moveDown();
 		} else {
+			if (checkTop()) {
+				gameOver = true;
+			}
 			createNewShape();
 			checkLines();
 		}
 	}
-	
+
 	/**
 	 * moves the current shape to the left
 	 */
@@ -173,6 +235,20 @@ public class Grid {
 		if (!checkRight() && !checkBlocksRight()) {
 			currentShape.moveRight();
 		}
+	}
+	
+	/**
+	 * rotates the shape left
+	 */
+	public void rotateLeft() {
+		currentShape.rotateCounterClockwise(WIDTH);
+	}
+	
+	/**
+	 * rotates the shape right
+	 */
+	public void rotateRight() {
+		currentShape.rotateClockwise(WIDTH);
 	}
 	
 	/**
@@ -217,6 +293,22 @@ public class Grid {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	/**
+	 * checks if there are blocks below the shape and if it's touching the top
+	 * 
+	 * @return
+	 * a {@code boolean} if true
+	 */
+	private boolean checkTop() {
+		for (Block i : currentShape.getBlocks()) {
+			if (i.getY() == 0) {
+				return true;
+			} 
+		}
+		
 		return false;
 	}
 	
