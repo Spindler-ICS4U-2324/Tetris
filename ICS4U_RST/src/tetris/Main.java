@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -36,6 +37,8 @@ public class Main extends Application{
 	
 	private Grid grid;
 	private int shapeSpeed;
+	
+	boolean running;
 	
 	private Label score;
 	private Label level;
@@ -130,6 +133,8 @@ public class Main extends Application{
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
 		
+		running = true;
+		
 		scene.setOnKeyPressed(e -> {
 			if (e.getCode().equals(KeyCode.S)) {
 				grid.moveDown();
@@ -152,6 +157,14 @@ public class Main extends Application{
 			} else if (e.getCode().equals(KeyCode.SPACE)) {
 				grid.drop();
 				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.CONTROL)) {
+				if (running) {
+					shapeTransition.pause();
+					running = false;
+				} else {
+					shapeTransition.play();
+					running = true;
+				}
 			}
 		});
 		
@@ -161,6 +174,8 @@ public class Main extends Application{
 		stage.setScene(scene);
 		// changing the title
 		stage.setTitle("Tetris");
+		// setting icon image
+		stage.getIcons().add(new Image("file:res/img/Tetris_logo.png"));
 		// showing the scene
 		stage.show();
 	}
