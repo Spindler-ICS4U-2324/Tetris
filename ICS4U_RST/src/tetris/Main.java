@@ -180,11 +180,23 @@ public class Main extends Application{
 						animation.pause();
 						running = false;
 					}
+				} else if (e.getCode().equals(KeyCode.G)) {
+					grid.save();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.H)) {
+					grid.load();
+					updateGridColor();
 				}
 			} else {
 				if (e.getCode().equals(KeyCode.CONTROL)) {
 					animation.play();
 					running = true;
+				} else if (e.getCode().equals(KeyCode.G)) {
+					grid.save();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.H)) {
+					grid.load();
+					updateGridColor();
 				}
 			}
 		});
@@ -211,7 +223,6 @@ public class Main extends Application{
 		updateGridColor();
 		updateBlocks();
 	}
-
 	
 	/**
 	 * moves the blocks down after a specified time

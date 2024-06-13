@@ -1,5 +1,9 @@
 package tetris;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
@@ -472,5 +476,110 @@ public class Grid {
 	 */
 	public int getLines() {
 		return numClearedLines;
+	}
+
+	/**
+	 * saves all game data to a file
+	 */
+	public void save() {
+		// creates a fileWriter
+		FileWriter fileWrite;
+		// creates a printWriter
+		PrintWriter filePrinter;
+		
+		try {
+			// creates a new fileWriter from the passenger.txt file
+			fileWrite = new FileWriter("data/Tetris.txt");
+			// creates a file printerWriter using the fileWrite
+			filePrinter = new PrintWriter(fileWrite);
+			
+			filePrinter.println(score);
+			filePrinter.println(level);
+			filePrinter.println(numClearedLines);
+			filePrinter.println(speed);
+
+			filePrinter.println(currentShape.getType());
+			
+			if (holdShape != null) {
+				filePrinter.println(holdShape.getType());
+			} else {
+				filePrinter.println(0);
+			}
+			
+			// prints the amount of blocks
+			filePrinter.println(blocks.size());
+			
+			// runs a loop for each block in the array
+			for (int i = 0; i < blocks.size(); i++) {
+				filePrinter.println(blocks.get(i).getX());
+				filePrinter.println(blocks.get(i).getY());
+				filePrinter.println(blocks.get(i).getType());
+			}
+			
+			filePrinter.println(nextShapes.size());
+			
+			for (int i = 0; i < nextShapes.size(); i++) {
+				filePrinter.println(nextShapes.get(i).getType());
+			}
+			
+			// closes the file
+			fileWrite.close();		
+		} catch(Exception e) {
+			// prints the error message
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * loads game data from a file
+	 */
+	public void load() {
+		blocks.clear();
+		nextShapes.clear();
+		
+		gameOver = false;
+		
+		try {
+			// create fileReader to read the data from the Tetris.txt file
+			FileReader passengerFile = new FileReader("data/Tetris.txt");
+			// creates a buggered reader using the fileReader
+			BufferedReader passengerStream = new BufferedReader(passengerFile);
+	
+	    	score = Integer.parseInt(passengerStream.readLine());
+	    	level = Integer.parseInt(passengerStream.readLine());
+	    	numClearedLines = Integer.parseInt(passengerStream.readLine());
+	    	speed = Integer.parseInt(passengerStream.readLine());
+	    	
+	    	currentShape = new Shape(Integer.parseInt(passengerStream.readLine()));
+	    	
+	    	int holdShapeType = Integer.parseInt(passengerStream.readLine());
+	    	
+	    	if (holdShapeType != 0) {
+	    		holdShape = new Shape(holdShapeType);
+	    	} else {
+	    		holdShape = null;
+	    	}
+	    	
+	    	int size = Integer.parseInt(passengerStream.readLine());
+	
+	    	for (int i = 0; i < size; i++) {
+	    		int x = Integer.parseInt(passengerStream.readLine());
+	    		int y = Integer.parseInt(passengerStream.readLine());
+	    		int type = Integer.parseInt(passengerStream.readLine());
+	    		blocks.add(new Block(x,y,type));
+	    	}
+	    	
+	    	size = Integer.parseInt(passengerStream.readLine());
+	    	
+	    	for (int i = 0; i < size; i++) {
+	    		nextShapes.add(new Shape(Integer.parseInt(passengerStream.readLine())));
+	    	}
+	    	
+	    	// closes the file
+	    	passengerFile.close();
+		} catch (Exception e) {
+			// prints the error
+			e.printStackTrace();
+		}
 	}
 }
