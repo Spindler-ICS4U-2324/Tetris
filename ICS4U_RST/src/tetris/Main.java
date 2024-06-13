@@ -9,18 +9,20 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * @author jake pommainville and rohan dave
+ * @author jake pommainville and rohan daves
  * 
  * date: 6/7/24
  */
@@ -33,12 +35,14 @@ public class Main extends Application{
 	private Grid grid;
 	private int shapeSpeed;
 	
-	SequentialTransition shapeTransition;
-
-	private boolean running;
+	private Label score;
+	private Label level;
+	private Label lines;
 	
-	final private static int SIZE = 30;
-	final private static int SPACE = 3;
+	private SequentialTransition shapeTransition;
+	
+	final private static int SIZE = 40;
+	final private static int SPACE = -1;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -69,13 +73,38 @@ public class Main extends Application{
 			grdHold.getRowConstraints().add(new RowConstraints(SIZE));
 		}
 		
+		// creating the gridpane to serve as the grid for the tetris blocks
+		grdNext = new GridPane();
+		// sets the spacing
+		grdNext.setVgap(SPACE);
+		grdNext.setHgap(SPACE);
+		grdNext.setPadding(new Insets(SPACE));
+		
+		// creating the constraints for each cell
+		for (int i = 0; i < Grid.WIDTH-6; i++) {
+			grdNext.getColumnConstraints().add(new ColumnConstraints(SIZE));
+			grdNext.getRowConstraints().add(new RowConstraints(SIZE));
+		}
+				
+		score = new Label("Score: 0");
+		level = new Label("Level: 0");
+		lines = new Label("Cleared Lines: 0");
+		
+		VBox hbxLabels = new VBox(score, level, lines);
+		hbxLabels.setPadding(new Insets(5));
+		hbxLabels.setSpacing(10);
+		
+		VBox hbxLeftSide = new VBox(grdNext, hbxLabels);
+		hbxLeftSide.setPadding(new Insets(5));
+		hbxLeftSide.setSpacing(10);
+		
 		// creating an hbox to serve as the root
 		HBox root = new HBox();
 		// setting the spacing
 		root.setPadding(new Insets(5));
-		root.setSpacing(SIZE-5);
+		root.setSpacing(SIZE+10);
 		// adding the tetris grid to the root
-		root.getChildren().addAll(grdTetris, grdHold);
+		root.getChildren().addAll(hbxLeftSide, grdTetris, grdHold);
 		
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
@@ -167,29 +196,7 @@ public class Main extends Application{
 					square.setStroke(Color.BLACK);
 					
 					if (blocks.contains(currentBlock)) {
-						switch (blocks.get(blocks.indexOf(currentBlock)).getType()) {
-							case 1:
-								square.setFill(Color.DEEPSKYBLUE);
-								break;
-							case 2:
-								square.setFill(Color.ORANGE);
-								break;
-							case 3:
-								square.setFill(Color.BLUE);
-								break;
-							case 4:
-								square.setFill(Color.YELLOW);
-								break;
-							case 5:
-								square.setFill(Color.GREEN);
-								break;
-							case 6:
-								square.setFill(Color.PURPLE);
-								break;
-							case 7:
-								square.setFill(Color.RED);
-								break;
-						}
+						square.setFill(getColor(blocks.get(blocks.indexOf(currentBlock)).getType()));
 					} else {
 						square.setFill(Color.LIGHTGRAY);
 					}
@@ -199,81 +206,136 @@ public class Main extends Application{
 					grdTetris.add(group, j, i);
 				}
 			}
-			grdHold.getChildren().clear();
 			
-			if (grid.getHold() != null) {
-				int type = grid.getHold().getType();
-				
-				Color holdColor;
-				
-				if (type == 1) {
-					holdColor = Color.DEEPSKYBLUE;
-				} else if (type == 2) {
-					holdColor = Color.ORANGE;
-				} else if (type == 3) {
-					holdColor = Color.BLUE;
-				} else if (type == 4) {
-					holdColor = Color.YELLOW;
-				} else if (type == 5) {
-					holdColor = Color.GREEN;
-				} else if (type == 6) {
-					holdColor = Color.PURPLE;
-				} else {
-					holdColor = Color.RED;
-				}
-				
-				if (type != 4 && type != 5 && type != 2 && type != 6) {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);;
-					grdHold.add(square, 0, 0);
-				}
-				
-				if (type != 2 && type != 3) {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);
-					grdHold.add(square, 1, 0);
-				}
-				
-				if (type != 7 && type != 3 && type != 6) {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);
-					grdHold.add(square, 2, 0);
-				}
-				
-				if (type == 1) {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);
-					grdHold.add(square, 3, 0);
-				} else {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);
-					grdHold.add(square, 1, 1);
-				}
-				
-				if (type != 5 && type != 1) {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);
-					grdHold.add(square, 2, 1);
-				}
-				
-				if (type != 1 && type != 7 && type != 4) {
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
-					square.setFill(holdColor);
-					grdHold.add(square, 0, 1);
-				}
-			}
-			
-			
+			updateInfoGrid(true, grdHold);
+			updateInfoGrid(false, grdNext);
+			updateLabels();
 		} else {
 			startNewGame();
 		}
+	}
+	
+	/**
+	 * updates the games labels
+	 */
+	private void updateLabels() {
+		score.setText("Score: "+grid.getScore());
+		level.setText("level: "+grid.getLevel());
+		lines.setText("Cleared Lines: "+grid.getLines());
+	}
+
+	/**
+	 * A method to return the correct color for the correct shape type
+	 * 
+	 * @param type
+	 * an {@code int} for the type of the shape
+	 * 
+	 * @return
+	 * the {@code Color} of the shape
+	 */
+	private Color getColor(int type) {
+		switch (type) {
+		case 1:
+			return Color.DEEPSKYBLUE;
+		case 2:
+			return Color.ORANGE;
+		case 3:
+			return Color.BLUE;
+		case 4:
+			return Color.YELLOW;
+		case 5:
+			return Color.GREEN;
+		case 6:
+			return Color.PURPLE;
+		case 7:
+			return Color.RED;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * a method to update the next shape grid or the held shape grid
+	 * 
+	 * @param typeOfGrid
+	 * a {@code boolean} for the type of grid being updated (true for hold and false for next)
+	 * 
+	 * @param gridPane
+	 * the {@code GridPane} being updated
+	 */
+	private void updateInfoGrid(boolean typeOfGrid, GridPane gridPane) {
+		int typeOfShape = 1;
+
+		Shape shape = null;
+		Color color;
+
+		
+		gridPane.getChildren().clear();
+		
+		if (typeOfGrid == true) {
+			if (grid.getHold() != null) {
+				shape = grid.getHold();
+				typeOfShape = grid.getHold().getType();
+			}
+		} else {
+			if (grid.getNext() != null) {
+				shape = grid.getNext();
+				typeOfShape = grid.getNext().getType();
+			}
+		}
+		
+		if (shape != null) {			
+			
+			color = getColor(typeOfShape);
+			
+			if (typeOfShape != 4 && typeOfShape != 5 && typeOfShape != 2 && typeOfShape != 6) {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);;
+				gridPane.add(square, 0, 0);
+			}
+			
+			if (typeOfShape != 2 && typeOfShape != 3) {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);
+				gridPane.add(square, 1, 0);
+			}
+			
+			if (typeOfShape != 7 && typeOfShape != 3 && typeOfShape != 6) {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);
+				gridPane.add(square, 2, 0);
+			}
+			
+			if (typeOfShape == 1) {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);
+				gridPane.add(square, 3, 0);
+			} else {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);
+				gridPane.add(square, 1, 1);
+			}
+			
+			if (typeOfShape != 5 && typeOfShape != 1) {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);
+				gridPane.add(square, 2, 1);
+			}
+			
+			if (typeOfShape != 1 && typeOfShape != 7 && typeOfShape != 4) {
+				Rectangle square = new Rectangle(SIZE, SIZE);
+				square.setStroke(Color.BLACK);
+				square.setFill(color);
+				gridPane.add(square, 0, 1);
+			}
+		}
+		
 	}
 
 	public static void main(String args[]) {

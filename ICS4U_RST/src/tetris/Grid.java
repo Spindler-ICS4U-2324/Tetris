@@ -3,18 +3,28 @@ package tetris;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-import simpleIO.Console;
-
+/**
+ * @author Jake Pommainville and Rohan Daves
+ * Date: today
+ */
 public class Grid {
 	/**
 	 * a {@code boolean} for the status of the game
 	 */
 	private boolean gameOver;
+	/**
+	 * a {@code boolean} for weather a shape has already been held
+	 */
+	private boolean alreadyHeld;
 	
 	/**
 	 * an {@code ArrayList} for all the blocks in the tetris grid
 	 */
 	private ArrayList<Block> blocks;
+	/**
+	 * an {@code ArrayList} for the next shapes
+	 */
+	private ArrayList<Shape> nextShapes;
 	
 	/**
 	 * an {@code int} for the amount of lines cleared
@@ -34,14 +44,12 @@ public class Grid {
 	private int level;
 	
 	/**
-	 * a variable for the current shape used in the game
+	 * a {@code Shape} for the current shape used in the game
 	 */
 	private Shape currentShape;
 	/**
-	 * a variable for the next shape used in the game
+	 * a {@code Shape} for the shape being held
 	 */
-	private Shape nextShape;
-
 	private Shape holdShape;
 	
 	/**
@@ -53,26 +61,67 @@ public class Grid {
 	 * the constructor for the Grid class
 	 */
 	Grid() {
-		this.blocks = new ArrayList<Block>();
-		this.gameOver = false;
-		this.numClearedLines = 9;
-		this.level = 0;
-		this.score = 0;
-		this.speed = 800;
+		blocks = new ArrayList<Block>();
+		nextShapes = new ArrayList<Shape>();
+
+		gameOver = false;
+		
+		numClearedLines = 0;
+		level = 0;
+		score = 0;
+		speed = 800;
 		
 		holdShape = null;
 		
-		int randomNumber;
-		
-		randomNumber = (int) (Math.random()*7)+1;
-		
-		nextShape = new Shape(randomNumber);
-
-		randomNumber = (int) (Math.random()*7)+1;
-		
-		currentShape = new Shape(randomNumber);
+		updateNextShapes();
+		createNewShape();
 	}
 	
+	/**
+	 * Creates a new shape and saves the current shape into the grid
+	 */
+	private void createNewShape() {
+		alreadyHeld = false;
+		
+		if (currentShape != null) 
+			blocks.addAll(currentShape.getBlocks());
+		
+		currentShape = nextShapes.get(0);
+		
+		nextShapes.remove(0);
+		
+		if (nextShapes.size() == 0) {
+			updateNextShapes();
+		}
+	}
+	
+	/**
+	 * generates new shapes into an array in a random order with no duplicates
+	 */
+	private void updateNextShapes() {
+		int randomNumber;
+		
+		int[] randomNumbers = new int[7];
+		
+		for (int i = 0; i < 7; i++) {
+			boolean check;
+			 do { 
+				check = true;
+				randomNumber = (int) (Math.random()*7)+1;
+				for (int j = 0; j < 7; j++) {
+					if (randomNumbers[j] == randomNumber) {
+						check = false;
+					}
+				}
+			} while (check == false);
+			randomNumbers[i] = randomNumber;
+		}
+					
+		for (int i = 0; i < randomNumbers.length; i++) {
+			nextShapes.add(new Shape(randomNumbers[i]));
+		}
+	}
+
 	/**
 	 * a method to get every block in the tetris grid
 	 * 
@@ -88,15 +137,21 @@ public class Grid {
 		return blocks;
 	}
 	
+	/**
+	 * holds a shape if it wasn't previously swapped
+	 */
 	public void hold() {
-		if (holdShape == null) {
-			holdShape = currentShape;
-			currentShape = null;
-			createNewShape();
-		} else {
-			int type = holdShape.getType();
-			holdShape = currentShape;
-			currentShape = new Shape(type);
+		if (!alreadyHeld) {
+			if (holdShape == null) {
+				holdShape = currentShape;
+				currentShape = null;
+				createNewShape();
+			} else {
+				int type = holdShape.getType();
+				holdShape = currentShape;
+				currentShape = new Shape(type);
+				alreadyHeld = true;
+			}
 		}
 	}
 	
@@ -153,12 +208,6 @@ public class Grid {
 		level = numClearedLines / 10;
 		
 		updateSpeed();
-		
-		Console.print("Cleared Lines: "+numClearedLines);
-		Console.print("Level: "+level);
-		Console.print("Score: "+score);
-		Console.print("Game Speed (ms): "+speed);
-		Console.print();
 	}
 
 	/**
@@ -198,20 +247,6 @@ public class Grid {
 		}
 		
 		score += lineMultiplier * (level + 1);
-	}
-
-	/**
-	 * Creates a new shape and saves the current shape into the grid
-	 */
-	private void createNewShape() {
-		int randomNumber = (int) (Math.random()*7)+1;
-		
-		if (currentShape != null) 
-			blocks.addAll(currentShape.getBlocks());
-		
-		currentShape = nextShape;
-		
-		nextShape = new Shape(randomNumber);
 	}
 
 	/**
@@ -341,7 +376,7 @@ public class Grid {
 	}
 	
 	/**
-	 * checks if there are blocks below the current shape
+	 * checks if there are blocks below the current {@code Shape}
 	 * 
 	 * @return
 	 * a {@code boolean} true if there are blocks below and false if there are not
@@ -356,7 +391,7 @@ public class Grid {
 	}
 	
 	/**
-	 * checks if there are blocks to the left of the current shape
+	 * checks if there are blocks to the left of the current {@code Shape}
 	 * 
 	 * @return
 	 * a {@code boolean} true if there are blocks to the left and false if there are not
@@ -371,7 +406,7 @@ public class Grid {
 	}
 	
 	/**
-	 * checks if there are blocks to the right of the current shape
+	 * checks if there are blocks to the right of the current {@code Shape}
 	 * 
 	 * @return
 	 * a {@code boolean} true if there are blocks to the right and false if there are not
@@ -385,7 +420,57 @@ public class Grid {
 		return false;
 	}
 
+	/**
+	 * get's the held {@code Shape}
+	 * 
+	 * @return
+	 * the {@code Shape} that is currently held
+	 */
 	public Shape getHold() {
 		return holdShape;
+	}
+
+	/**
+	 * get's the next {@code Shape}
+	 * 
+	 * @return
+	 * the next {@code Shape}
+	 */
+	public Shape getNext() {
+		if (nextShapes.size() == 0) {
+			return null;
+		} else {
+			return nextShapes.get(0);
+		}
+	}
+
+	/**
+	 * get's the current score
+	 * 
+	 * @return
+	 * an {@code int} for the score
+	 */
+	public int getScore() {
+		return score;
+	}
+
+	/**
+	 * get's the current level
+	 * 
+	 * @return
+	 * an {@code int} for the level
+	 */
+	public int getLevel() {
+		return level;
+	}
+	
+	/**
+	 * get's the number of cleared lines
+	 * 
+	 * @return
+	 * an {@code int} for the number of cleared lines
+	 */
+	public int getLines() {
+		return numClearedLines;
 	}
 }
