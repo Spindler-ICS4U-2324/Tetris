@@ -85,6 +85,23 @@ public class Main extends Application{
 		vbxHold.setPadding(new Insets(5));
 		vbxHold.setSpacing(10);
 		
+		Rectangle rectPause = new Rectangle(150,150);
+		rectPause.setOnMouseClicked(e -> {
+			if (running) {
+				shapeTransition.pause();
+				running = false;
+			} else {
+				shapeTransition.play();
+				running = true;
+			}
+		});
+		rectPause.setFill(Color.LIGHTGRAY);
+		rectPause.setStroke(Color.BLACK);
+		
+		VBox vbxRightSide = new VBox(vbxHold, rectPause);
+		vbxRightSide.setPadding(new Insets(5));
+		vbxRightSide.setSpacing(425);
+		
 		Label lblNext = new Label("Next Shape:");
 		lblNext.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
@@ -128,7 +145,7 @@ public class Main extends Application{
 		root.setPadding(new Insets(5));
 		root.setSpacing(300);
 		// adding the tetris grid to the root
-		root.getChildren().addAll(hbxLeftSide, grdTetris, vbxHold);
+		root.getChildren().addAll(hbxLeftSide, grdTetris, vbxRightSide);
 		
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
