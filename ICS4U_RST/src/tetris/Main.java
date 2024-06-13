@@ -27,6 +27,8 @@ import javafx.util.Duration;
 public class Main extends Application{
 
 	private GridPane grdTetris;
+	private GridPane grdHold;
+	private GridPane grdNext;
 	
 	private Grid grid;
 	private int shapeSpeed;
@@ -47,12 +49,24 @@ public class Main extends Application{
 		grdTetris.setVgap(SPACE);
 		grdTetris.setHgap(SPACE);
 		grdTetris.setPadding(new Insets(SPACE));
-		grdTetris.setGridLinesVisible(true);
 		
 		// creating the constraints for each cell
 		for (int i = 0; i < Grid.WIDTH; i++) {
 			grdTetris.getColumnConstraints().add(new ColumnConstraints(SIZE));
 			grdTetris.getRowConstraints().add(new RowConstraints(SIZE));
+		}
+		
+		// creating the gridpane to serve as the grid for the tetris blocks
+		grdHold = new GridPane();
+		// sets the spacing
+		grdHold.setVgap(SPACE);
+		grdHold.setHgap(SPACE);
+		grdHold.setPadding(new Insets(SPACE));
+		
+		// creating the constraints for each cell
+		for (int i = 0; i < Grid.WIDTH-6; i++) {
+			grdHold.getColumnConstraints().add(new ColumnConstraints(SIZE));
+			grdHold.getRowConstraints().add(new RowConstraints(SIZE));
 		}
 		
 		// creating an hbox to serve as the root
@@ -61,7 +75,7 @@ public class Main extends Application{
 		root.setPadding(new Insets(5));
 		root.setSpacing(SIZE-5);
 		// adding the tetris grid to the root
-		root.getChildren().add(grdTetris);
+		root.getChildren().addAll(grdTetris, grdHold);
 		
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
@@ -81,6 +95,12 @@ public class Main extends Application{
 				updateGridColor();
 			} else if (e.getCode().equals(KeyCode.E)) {
 				grid.rotateRight();
+				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.C)) {
+				grid.hold();
+				updateGridColor();
+			} else if (e.getCode().equals(KeyCode.SPACE)) {
+				grid.drop();
 				updateGridColor();
 			}
 		});
@@ -161,13 +181,13 @@ public class Main extends Application{
 								square.setFill(Color.YELLOW);
 								break;
 							case 5:
-								square.setFill(Color.RED);
+								square.setFill(Color.GREEN);
 								break;
 							case 6:
 								square.setFill(Color.PURPLE);
 								break;
 							case 7:
-								square.setFill(Color.FORESTGREEN);
+								square.setFill(Color.RED);
 								break;
 						}
 					} else {
@@ -179,6 +199,78 @@ public class Main extends Application{
 					grdTetris.add(group, j, i);
 				}
 			}
+			grdHold.getChildren().clear();
+			
+			if (grid.getHold() != null) {
+				int type = grid.getHold().getType();
+				
+				Color holdColor;
+				
+				if (type == 1) {
+					holdColor = Color.DEEPSKYBLUE;
+				} else if (type == 2) {
+					holdColor = Color.ORANGE;
+				} else if (type == 3) {
+					holdColor = Color.BLUE;
+				} else if (type == 4) {
+					holdColor = Color.YELLOW;
+				} else if (type == 5) {
+					holdColor = Color.GREEN;
+				} else if (type == 6) {
+					holdColor = Color.PURPLE;
+				} else {
+					holdColor = Color.RED;
+				}
+				
+				if (type != 4 && type != 5 && type != 2 && type != 6) {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);;
+					grdHold.add(square, 0, 0);
+				}
+				
+				if (type != 2 && type != 3) {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);
+					grdHold.add(square, 1, 0);
+				}
+				
+				if (type != 7 && type != 3 && type != 6) {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);
+					grdHold.add(square, 2, 0);
+				}
+				
+				if (type == 1) {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);
+					grdHold.add(square, 3, 0);
+				} else {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);
+					grdHold.add(square, 1, 1);
+				}
+				
+				if (type != 5 && type != 1) {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);
+					grdHold.add(square, 2, 1);
+				}
+				
+				if (type != 1 && type != 7 && type != 4) {
+					Rectangle square = new Rectangle(SIZE, SIZE);
+					square.setStroke(Color.BLACK);
+					square.setFill(holdColor);
+					grdHold.add(square, 0, 1);
+				}
+			}
+			
+			
 		} else {
 			startNewGame();
 		}

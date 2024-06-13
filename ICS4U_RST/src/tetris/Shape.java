@@ -93,6 +93,15 @@ public class Shape {
 			break;
 		}
 	}
+	
+	/**
+	 * returns the type
+	 * @return
+	 * an {@code int} for the type of shape
+	 */
+	public int getType() {
+		return type;
+	}
 
 	/**
 	 * Moves the shape down by moving individual blocks

@@ -41,6 +41,8 @@ public class Grid {
 	 * a variable for the next shape used in the game
 	 */
 	private Shape nextShape;
+
+	private Shape holdShape;
 	
 	/**
 	 * an {@code int} for the size of the grid
@@ -57,6 +59,8 @@ public class Grid {
 		this.level = 0;
 		this.score = 0;
 		this.speed = 800;
+		
+		holdShape = null;
 		
 		int randomNumber;
 		
@@ -82,6 +86,30 @@ public class Grid {
 		blocks.addAll(currentShape.getBlocks());
 		
 		return blocks;
+	}
+	
+	public void hold() {
+		if (holdShape == null) {
+			holdShape = currentShape;
+			currentShape = null;
+			createNewShape();
+		} else {
+			int type = holdShape.getType();
+			holdShape = currentShape;
+			currentShape = new Shape(type);
+		}
+	}
+	
+	/**
+	 * a method to drop the current shape to the lowest possible space
+	 */
+	public void drop() {
+		for (int i = 0; i < HEIGHT; i++) {
+			if (checkBlocksBelow() || checkBottom()) {
+				break;
+			}
+			moveDown();
+		}
 	}
 	
 	/**
@@ -142,13 +170,13 @@ public class Grid {
 		if (-1 < level && level < 9) {
 			speed = (int) (((time - (level * 5.0)) / 60.0) * 1000.0);
 		} else if (level == 9) {
-			speed = (int) (100);
+			speed = 100;
 		} else if (9 < level && level < 19) {
-			speed = (int) (66.6666666667);
+			speed = 66;
 		} else if (18 < level && level < 29) {
-			speed = (int) (33.3333333333);
+			speed =  33;
 		} else {
-			speed = (int) (16.6666666667);
+			speed = 16;
 		}
 	}
 
@@ -355,5 +383,9 @@ public class Grid {
 			}
 		}
 		return false;
+	}
+
+	public Shape getHold() {
+		return holdShape;
 	}
 }
