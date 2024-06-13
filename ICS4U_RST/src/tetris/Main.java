@@ -44,7 +44,7 @@ public class Main extends Application{
 	private Label level;
 	private Label lines;
 	
-	private SequentialTransition shapeTransition;
+	private SequentialTransition animation;
 	
 	final private static int SIZE = 40;
 	final private static int SPACE = -1;
@@ -88,10 +88,10 @@ public class Main extends Application{
 		Rectangle rectPause = new Rectangle(150,150);
 		rectPause.setOnMouseClicked(e -> {
 			if (running) {
-				shapeTransition.pause();
+				animation.pause();
 				running = false;
 			} else {
-				shapeTransition.play();
+				animation.play();
 				running = true;
 			}
 		});
@@ -153,33 +153,37 @@ public class Main extends Application{
 		running = true;
 		
 		scene.setOnKeyPressed(e -> {
-			if (e.getCode().equals(KeyCode.S)) {
-				grid.moveDown();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.A)) {
-				grid.moveLeft();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.D)) {
-				grid.moveRight();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.Q)) {
-				grid.rotateLeft();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.E)) {
-				grid.rotateRight();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.C)) {
-				grid.hold();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.SPACE)) {
-				grid.drop();
-				updateGridColor();
-			} else if (e.getCode().equals(KeyCode.CONTROL)) {
-				if (running) {
-					shapeTransition.pause();
-					running = false;
-				} else {
-					shapeTransition.play();
+			if (running) {
+				if (e.getCode().equals(KeyCode.S)) {
+					grid.moveDown();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.A)) {
+					grid.moveLeft();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.D)) {
+					grid.moveRight();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.Q)) {
+					grid.rotateLeft();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.E)) {
+					grid.rotateRight();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.C)) {
+					grid.hold();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.SPACE)) {
+					grid.drop();
+					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.CONTROL)) {
+					if (running) {
+						animation.pause();
+						running = false;
+					}
+				}
+			} else {
+				if (e.getCode().equals(KeyCode.CONTROL)) {
+					animation.play();
 					running = true;
 				}
 			}
@@ -215,16 +219,16 @@ public class Main extends Application{
 	private void updateBlocks() {
 		shapeSpeed = grid.getSpeed();
 		
-		shapeTransition = new SequentialTransition();
+		animation = new SequentialTransition();
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
 		pauseTransition.setOnFinished(e -> {
 			grid.moveDown();
 			updateGridColor();
 		});
 		
-		shapeTransition.getChildren().add(pauseTransition);
-		shapeTransition.setCycleCount(Timeline.INDEFINITE);
-		shapeTransition.play();
+		animation.getChildren().add(pauseTransition);
+		animation.setCycleCount(Timeline.INDEFINITE);
+		animation.play();
 	}
 
 	/**
@@ -235,7 +239,7 @@ public class Main extends Application{
 			grdTetris.getChildren().clear();
 			
 			if (shapeSpeed != grid.getSpeed()) {
-				shapeTransition.stop();
+				animation.stop();
 				updateBlocks();
 			}
 			
