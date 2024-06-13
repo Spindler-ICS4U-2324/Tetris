@@ -66,7 +66,7 @@ public class Grid {
 
 		gameOver = false;
 		
-		numClearedLines = 0;
+		numClearedLines = 10;
 		level = 0;
 		score = 0;
 		speed = 800;

@@ -18,6 +18,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -60,6 +62,9 @@ public class Main extends Application{
 			grdTetris.getRowConstraints().add(new RowConstraints(SIZE));
 		}
 		
+		Label lblHold = new Label("Held Shape:");
+		lblHold.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdHold = new GridPane();
 		// sets the spacing
@@ -73,6 +78,13 @@ public class Main extends Application{
 			grdHold.getRowConstraints().add(new RowConstraints(SIZE));
 		}
 		
+		VBox vbxHold = new VBox(lblHold, grdHold);
+		vbxHold.setPadding(new Insets(5));
+		vbxHold.setSpacing(10);
+		
+		Label lblNext = new Label("Next Shape:");
+		lblNext.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdNext = new GridPane();
 		// sets the spacing
@@ -85,16 +97,25 @@ public class Main extends Application{
 			grdNext.getColumnConstraints().add(new ColumnConstraints(SIZE));
 			grdNext.getRowConstraints().add(new RowConstraints(SIZE));
 		}
+		
+		VBox vbxNext = new VBox(lblNext, grdNext);
+		vbxNext.setPadding(new Insets(5));
+		vbxNext.setSpacing(10);
 				
 		score = new Label("Score: 0");
+		score.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		
 		level = new Label("Level: 0");
+		level.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+
 		lines = new Label("Cleared Lines: 0");
+		lines.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
 		VBox hbxLabels = new VBox(score, level, lines);
 		hbxLabels.setPadding(new Insets(5));
 		hbxLabels.setSpacing(10);
 		
-		VBox hbxLeftSide = new VBox(grdNext, hbxLabels);
+		VBox hbxLeftSide = new VBox(vbxNext, hbxLabels);
 		hbxLeftSide.setPadding(new Insets(5));
 		hbxLeftSide.setSpacing(10);
 		
@@ -102,9 +123,9 @@ public class Main extends Application{
 		HBox root = new HBox();
 		// setting the spacing
 		root.setPadding(new Insets(5));
-		root.setSpacing(SIZE+10);
+		root.setSpacing(300);
 		// adding the tetris grid to the root
-		root.getChildren().addAll(hbxLeftSide, grdTetris, grdHold);
+		root.getChildren().addAll(hbxLeftSide, grdTetris, vbxHold);
 		
 		// creating a new scene with the root as the root node
 		Scene scene = new Scene(root);
