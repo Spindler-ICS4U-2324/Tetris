@@ -1,5 +1,6 @@
 package tetris;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import javafx.animation.PauseTransition;
@@ -17,6 +18,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -37,8 +40,9 @@ public class Main extends Application{
 	
 	private Grid grid;
 	private int shapeSpeed;
-	
 	boolean running;
+	
+	MediaPlayer music;
 	
 	private Label score;
 	private Label level;
@@ -51,6 +55,9 @@ public class Main extends Application{
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		music = new MediaPlayer(new Media(new File("res/music/Tetris.mp3").toURI().toString()));
+		music.volumeProperty().set(0.05);
+		music.play();
 		
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdTetris = new GridPane();
