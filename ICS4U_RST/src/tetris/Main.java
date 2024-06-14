@@ -40,9 +40,9 @@ public class Main extends Application{
 	
 	private Grid grid;
 	private int shapeSpeed;
-	boolean running;
+	private boolean running;
 	
-	MediaPlayer music;
+	private MediaPlayer music;
 	
 	private Label score;
 	private Label level;
