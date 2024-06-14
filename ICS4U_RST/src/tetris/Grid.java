@@ -218,10 +218,24 @@ public class Grid {
 	 * updates the speed of the game based on the current level
 	 */
 	private void updateSpeed() {
-		double time = 48.0;
-		
-		if (-1 < level && level < 9) {
-			speed = (int) (((time - (level * 5.0)) / 60.0) * 1000.0);
+		if (level == 0) {
+			speed = 800;
+		} else if (level == 1) {
+			speed = 716;
+		} else if (level == 2) {
+			speed = 633;
+		} else if (level == 3) {
+			speed = 550;
+		} else if (level == 4) {
+			speed = 466;
+		} else if (level == 5) {
+			speed = 383;
+		} else if (level == 6) {
+			speed = 300;
+		} else if (level == 7) {
+			speed = 216;
+		} else if (level == 8) {
+			speed = 133;
 		} else if (level == 9) {
 			speed = 100;
 		} else if (9 < level && level < 19) {
