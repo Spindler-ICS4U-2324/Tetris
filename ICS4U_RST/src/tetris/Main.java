@@ -21,11 +21,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simpleIO.Console;
 
 /**
  * @author jake pommainville and rohan daves
@@ -41,6 +43,7 @@ public class Main extends Application{
 	private Grid grid;
 	private int shapeSpeed;
 	private boolean running;
+	private boolean animationFirstTime;
 	
 	private MediaPlayer music;
 	
@@ -49,12 +52,17 @@ public class Main extends Application{
 	private Label lines;
 	
 	private SequentialTransition animation;
+	PauseTransition pauseTransition;
 	
 	final private static int SIZE = 40;
 	final private static int SPACE = -1;
 	
+	Stage stage;
+	
 	@Override
 	public void start(Stage stage) throws Exception {
+		this.stage = stage;
+		// TODO get music to loop
 		music = new MediaPlayer(new Media(new File("res/music/Tetris.mp3").toURI().toString()));
 		music.volumeProperty().set(0.05);
 		music.play();
@@ -96,9 +104,11 @@ public class Main extends Application{
 		rectPause.setOnMouseClicked(e -> {
 			if (running) {
 				animation.pause();
+				music.pause();
 				running = false;
 			} else {
 				animation.play();
+				music.play();
 				running = true;
 			}
 		});
@@ -208,6 +218,8 @@ public class Main extends Application{
 			}
 		});
 		
+		animationFirstTime = true;
+		
 		startNewGame();
 		
 		// setting the scene to the scene
@@ -237,16 +249,28 @@ public class Main extends Application{
 	private void updateBlocks() {
 		shapeSpeed = grid.getSpeed();
 		
+		Console.print(shapeSpeed);
+		
+		if (!animationFirstTime) {
+			animation.stop();
+		} else {
+			animationFirstTime = false;
+		}
+		
 		animation = new SequentialTransition();
-		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
+		pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
 		pauseTransition.setOnFinished(e -> {
 			grid.moveDown();
 			updateGridColor();
 		});
 		
+		Console.print(pauseTransition.getDuration());
+		
 		animation.getChildren().add(pauseTransition);
 		animation.setCycleCount(Timeline.INDEFINITE);
 		animation.play();
+		
+		
 	}
 
 	/**
@@ -268,16 +292,15 @@ public class Main extends Application{
 					Block currentBlock = new Block(j, i);
 					Group group = new Group();
 					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.BLACK);
+					square.setStroke(Color.DIMGRAY);
 					
 					if (blocks.contains(currentBlock)) {
-						square.setFill(getColor(blocks.get(blocks.indexOf(currentBlock)).getType()));
+						group = getGroup(getColor(blocks.get(blocks.indexOf(currentBlock)).getType()));
 					} else {
-						square.setFill(Color.LIGHTGRAY);
+						square.setFill(Color.BLACK);
+						group.getChildren().add(square);
 					}
-					
-					group.getChildren().add(square);
-					
+										
 					grdTetris.add(group, j, i);
 				}
 			}
@@ -286,6 +309,7 @@ public class Main extends Application{
 			updateInfoGrid(false, grdNext);
 			updateLabels();
 		} else {
+			// TODO add method for lose screen
 			startNewGame();
 		}
 	}
@@ -317,16 +341,63 @@ public class Main extends Application{
 		case 3:
 			return Color.BLUE;
 		case 4:
-			return Color.YELLOW;
+			return Color.GOLD;
 		case 5:
-			return Color.GREEN;
+			return Color.LIMEGREEN;
 		case 6:
-			return Color.PURPLE;
+			return Color.DARKORCHID;
 		case 7:
 			return Color.RED;
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * returns a group containing a square with shading
+	 * 
+	 * @param color
+	 * a {@code Color} for the square in the group
+	 * 
+	 * @return
+	 * an {@code Group} containing a square with shading
+	 */
+	private Group getGroup(Color color) {
+		double thickness = (double) SIZE / 7.0;
+		
+		Group group = new Group();
+		
+		Polygon light = new Polygon();
+		light.setOpacity(0.3);
+		light.setFill(Color.WHITE);
+		light.getPoints().addAll(new Double[] {
+				0.0,0.0,
+				(double)SIZE,0.0,
+				(double)SIZE-thickness, thickness, 
+				thickness, thickness, 
+				thickness,(double)SIZE - thickness, 
+				0.0, (double)SIZE
+		});
+		
+		Polygon dark = new Polygon();
+		dark.setOpacity(0.25);
+		dark.setFill(Color.BLACK);
+		dark.getPoints().addAll(new Double[] {
+				(double)SIZE,(double)SIZE,
+				0.0,(double)SIZE,
+				thickness,(double)SIZE-thickness,
+				(double)SIZE-thickness,(double)SIZE-thickness,
+				(double)SIZE-thickness,thickness,
+				(double)SIZE,0.0
+		});
+		
+		Rectangle square = new Rectangle(SIZE, SIZE);
+		square.setStroke(Color.BLACK);
+		square.setFill(color);
+		
+		group.getChildren().addAll(square,light, dark);
+		
+		return group;
 	}
 	
 	/**
@@ -362,52 +433,38 @@ public class Main extends Application{
 		if (shape != null) {			
 			
 			color = getColor(typeOfShape);
-			
+						
 			if (typeOfShape != 4 && typeOfShape != 5 && typeOfShape != 2 && typeOfShape != 6) {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);;
-				gridPane.add(square, 0, 0);
+				Group group = getGroup(color);
+				gridPane.add(group, 0, 0);
 			}
 			
 			if (typeOfShape != 2 && typeOfShape != 3) {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);
-				gridPane.add(square, 1, 0);
+				Group group = getGroup(color);
+				gridPane.add(group, 1, 0);
 			}
 			
 			if (typeOfShape != 7 && typeOfShape != 3 && typeOfShape != 6) {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);
-				gridPane.add(square, 2, 0);
+				Group group = getGroup(color);
+				gridPane.add(group, 2, 0);
 			}
 			
 			if (typeOfShape == 1) {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);
-				gridPane.add(square, 3, 0);
+				Group group = getGroup(color);
+				gridPane.add(group, 3, 0);
 			} else {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);
-				gridPane.add(square, 1, 1);
+				Group group = getGroup(color);
+				gridPane.add(group, 1, 1);
 			}
 			
 			if (typeOfShape != 5 && typeOfShape != 1) {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);
-				gridPane.add(square, 2, 1);
+				Group group = getGroup(color);
+				gridPane.add(group, 2, 1);
 			}
 			
 			if (typeOfShape != 1 && typeOfShape != 7 && typeOfShape != 4) {
-				Rectangle square = new Rectangle(SIZE, SIZE);
-				square.setStroke(Color.BLACK);
-				square.setFill(color);
-				gridPane.add(square, 0, 1);
+				Group group = getGroup(color);
+				gridPane.add(group, 0, 1);
 			}
 		}
 		
