@@ -222,11 +222,9 @@ public class Shape {
 				
 				increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
 			}
-			
-			
-			
-			
 
+			
+			moveShapeInBounds(isRightBreached, isLeftBreached, gridWidth, isBottomBreached); // Moves the shape in bounds of the grid
 			
 			if (isBlockBeside(gridBlocks)) {  // If there is a block beside which will be rotated into
 				
@@ -239,13 +237,9 @@ public class Shape {
 					increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
 				}
 				
-			} else {
-				moveShapeInBounds(isRightBreached, isLeftBreached, gridWidth, isBottomBreached);
-			}
-			
+			} 
 			
 		}
-		
 		
 	}
 	
@@ -363,6 +357,8 @@ public class Shape {
 
 			}
 			
+			moveShapeInBounds(isRightBreached, isLeftBreached, gridWidth, isBottomBreached);  // Moves the shape in bounds of the grid
+			
 			if (isBlockBeside(gridBlocks)) {  // If there is a block beside which will be rotated into
 				
 				increment = 0;  // Resets the incrementer for resetting coordinates
@@ -374,9 +370,8 @@ public class Shape {
 					increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
 				}
 				
-			} else {
-				moveShapeInBounds(isRightBreached, isLeftBreached, gridWidth, isBottomBreached);
 			}
+				
 			
 		}
 		
