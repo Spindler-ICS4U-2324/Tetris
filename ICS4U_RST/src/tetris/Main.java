@@ -27,7 +27,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simpleIO.Console;
 
 /**
  * @author jake pommainville and rohan daves
@@ -248,9 +247,7 @@ public class Main extends Application{
 	 */
 	private void updateBlocks() {
 		shapeSpeed = grid.getSpeed();
-		
-		Console.print(shapeSpeed);
-		
+				
 		if (!animationFirstTime) {
 			animation.stop();
 		} else {
@@ -263,14 +260,10 @@ public class Main extends Application{
 			grid.moveDown();
 			updateGridColor();
 		});
-		
-		Console.print(pauseTransition.getDuration());
-		
+				
 		animation.getChildren().add(pauseTransition);
 		animation.setCycleCount(Timeline.INDEFINITE);
 		animation.play();
-		
-		
 	}
 
 	/**
