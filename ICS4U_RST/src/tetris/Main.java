@@ -8,15 +8,18 @@ import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -38,6 +41,11 @@ public class Main extends Application{
 	private GridPane grdHold;
 	private GridPane grdNext;
 	
+	private StackPane stkAllScreens;  // A stackpane which hold all the screens on the application
+	
+	private VBox vbxPauseScreen;   // HBox holding all the elements of the pause screen
+	private VBox vbxGameOverScreen;  // VBox holding all elements of game over screen
+	
 	private Grid grid;
 	private int shapeSpeed;
 	private boolean running;
@@ -47,17 +55,34 @@ public class Main extends Application{
 	private Label score;
 	private Label level;
 	private Label lines;
+	private Label lblFinalScore;
 	
 	private SequentialTransition animation;
 	
 	final private static int SIZE = 40;
 	final private static int SPACE = -1;
+	final private static int HUGE_FONT = 70;
+	final private static int MEDIUM_FONT = 25;
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		stkAllScreens = new StackPane();
+		
+		
 		music = new MediaPlayer(new Media(new File("res/music/Tetris.mp3").toURI().toString()));
 		music.volumeProperty().set(0.05);
-		music.play();
+		music.setAutoPlay(true);
+		music.setCycleCount(MediaPlayer.INDEFINITE);
+		//music.play();
+		
+		music.setOnEndOfMedia(new Runnable() {   // Learned from  https://stackoverflow.com/questions/43190594/javafx-mediaplayer-loop
+			@Override
+	        public void run() {
+	        	music.seek(Duration.ZERO);
+	        	music.play();
+	        }
+	    });
+		
 		
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdTetris = new GridPane();
@@ -92,20 +117,29 @@ public class Main extends Application{
 		vbxHold.setPadding(new Insets(5));
 		vbxHold.setSpacing(10);
 		
-		Rectangle rectPause = new Rectangle(150,150);
-		rectPause.setOnMouseClicked(e -> {
+		Rectangle rectPause = new Rectangle(150,150);  // Makes a rectangle
+		rectPause.setFill(Color.LIGHTGRAY);
+		rectPause.setStroke(Color.BLACK);
+	
+		Image imgSmallPause = new Image(getClass().getResource("/img/miniPause.png").toString());
+		ImageView smallPauseLogo = new ImageView(imgSmallPause);  // Small pause logo
+		
+		StackPane pauseButton = new StackPane();
+		pauseButton.getChildren().addAll(rectPause, smallPauseLogo);  // Stacks the pause logo on top of the rectanlge
+		
+		pauseButton.setOnMouseClicked(e -> {   // IF the stackpane containing pause logo is clicked
 			if (running) {
 				animation.pause();
 				running = false;
+				music.pause();
+				showPauseScreen();
 			} else {
 				animation.play();
 				running = true;
 			}
 		});
-		rectPause.setFill(Color.LIGHTGRAY);
-		rectPause.setStroke(Color.BLACK);
 		
-		VBox vbxRightSide = new VBox(vbxHold, rectPause);
+		VBox vbxRightSide = new VBox(vbxHold, pauseButton);
 		vbxRightSide.setPadding(new Insets(5));
 		vbxRightSide.setSpacing(425);
 		
@@ -154,10 +188,59 @@ public class Main extends Application{
 		// adding the tetris grid to the root
 		root.getChildren().addAll(hbxLeftSide, grdTetris, vbxRightSide);
 		
+		
+		//   Pause Screen
+		
+		
+		Label lblPaused = new Label("Paused");   // Title of pause screen
+		lblPaused.setFont(Font.font("Impact", HUGE_FONT));
+		lblPaused.setStyle("-fx-text-fill: #FF0000");
+		
+		Image imgPause = new Image(getClass().getResource("/img/pauseSymbol.png").toString());
+		ImageView pauseLogo = new ImageView(imgPause);  // Image of pause symbol
+		
+		Label lblResume = new Label("Press Space to Resume");   // Title of pause screen
+		lblResume.setFont(Font.font("Impact", MEDIUM_FONT));
+		lblResume.setStyle("-fx-text-fill: #FF0000");
+		
+		
+		vbxPauseScreen = new VBox(10);
+		vbxPauseScreen.getChildren().addAll(lblPaused, pauseLogo, lblResume);
+		vbxPauseScreen.setAlignment(Pos.CENTER);  // Centering all elements in the vbox
+		vbxPauseScreen.setStyle("-fx-background-color: #d3d3d3");
+		
+	
+		//  Game over screen
+		
+		Label lblGameOver = new Label ("Game Over");
+		lblGameOver.setFont(Font.font("Impact", HUGE_FONT));
+		lblGameOver.setStyle("-fx-text-fill: #FF0000");
+		
+		lblFinalScore = new Label();
+		lblFinalScore.setFont(Font.font("Impact", MEDIUM_FONT));
+		lblFinalScore.setStyle("-fx-text-fill: #00ff00");
+		
+		Label lblRestart = new Label("Press  n  to Start New Game");   // Title of pause screen
+		lblRestart.setFont(Font.font("Impact", MEDIUM_FONT));
+		lblRestart.setStyle("-fx-text-fill: #FF0000");
+		
+		vbxGameOverScreen = new VBox(30);
+		vbxGameOverScreen.getChildren().addAll(lblGameOver, lblFinalScore, lblRestart);
+		vbxGameOverScreen.setAlignment(Pos.CENTER);
+		vbxGameOverScreen.setStyle("-fx-background-color: #000000");
+		
+		
+		// Stack pane holding all possible elements
+		
+		stkAllScreens.getChildren().addAll(root);
+		
+		
 		// creating a new scene with the root as the root node
-		Scene scene = new Scene(root);
+		Scene scene = new Scene(stkAllScreens);
 		
 		running = true;
+		
+		
 		
 		scene.setOnKeyPressed(e -> {
 			if (running) {
@@ -204,11 +287,19 @@ public class Main extends Application{
 				} else if (e.getCode().equals(KeyCode.H)) {
 					grid.load();
 					updateGridColor();
+				} else if (e.getCode().equals(KeyCode.SPACE) ) {
+					hidePauseScreen();
+					animation.play();
+					running = true;
+					music.play();
 				}
 			}
+			
+			
 		});
 		
 		startNewGame();
+	
 		
 		// setting the scene to the scene
 		stage.setScene(scene);
@@ -231,6 +322,21 @@ public class Main extends Application{
 		updateBlocks();
 	}
 	
+	
+	/** 
+	 * Shows the pause screen when the user clicks the pause button
+	 */
+	private void showPauseScreen() {
+		stkAllScreens.getChildren().add(vbxPauseScreen);
+	}
+	
+	/**
+	 * Removes the pause screen from the stackpane
+	 */
+	private void hidePauseScreen() {
+		stkAllScreens.getChildren().remove(vbxPauseScreen);
+	}
+	
 	/**
 	 * moves the blocks down after a specified time
 	 */
@@ -239,9 +345,16 @@ public class Main extends Application{
 		
 		animation = new SequentialTransition();
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
-		pauseTransition.setOnFinished(e -> {
-			grid.moveDown();
-			updateGridColor();
+		pauseTransition.setOnFinished(e -> {  // Only moves blocks if game is still going
+			if (!grid.getGameOver()) {
+				grid.moveDown();
+				updateGridColor();
+			} else {
+				showGameOverScreen();
+				animation.stop();
+				music.pause();
+			}
+			
 		});
 		
 		animation.getChildren().add(pauseTransition);
@@ -286,8 +399,33 @@ public class Main extends Application{
 			updateInfoGrid(false, grdNext);
 			updateLabels();
 		} else {
-			startNewGame();
+			showGameOverScreen();
+			animation.stop();
+			music.pause();
+
 		}
+	}
+	
+	/*
+	 * Displays the game over screen
+	 */
+	private void showGameOverScreen() {
+		updateLabels();
+		
+		stkAllScreens.getChildren().add(vbxGameOverScreen);
+		
+		// Event handler to resume game
+		stkAllScreens.getScene().setOnKeyPressed(e -> {
+	        if (e.getCode().equals(KeyCode.N)) {
+	            startNewGame();
+	            music.play();
+	            stkAllScreens.getChildren().remove(vbxGameOverScreen);
+	            
+
+	        }
+	        
+	    });
+		
 	}
 	
 	/**
@@ -297,6 +435,7 @@ public class Main extends Application{
 		score.setText("Score: "+grid.getScore());
 		level.setText("level: "+grid.getLevel());
 		lines.setText("Cleared Lines: "+grid.getLines());
+		lblFinalScore.setText("Final Score: " + grid.getScore());
 	}
 
 	/**
@@ -416,5 +555,6 @@ public class Main extends Application{
 	public static void main(String args[]) {
 		launch(args);
 	}
+	
 
 }
