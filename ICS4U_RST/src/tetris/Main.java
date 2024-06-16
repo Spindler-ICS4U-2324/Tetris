@@ -260,8 +260,6 @@ public class Main extends Application{
 		
 		running = true;
 		
-		
-		
 		scene.setOnKeyPressed(e -> {
 			if (running) {
 				if (e.getCode().equals(KeyCode.S)) {
@@ -570,7 +568,7 @@ public class Main extends Application{
 		}
 		
 		if (shape != null) {			
-			
+			// gets the color of the block
 			color = getColor(typeOfShape);
 						
 			if (typeOfShape != 4 && typeOfShape != 5 && typeOfShape != 2 && typeOfShape != 6) {
