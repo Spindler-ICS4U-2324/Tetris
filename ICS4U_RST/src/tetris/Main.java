@@ -53,9 +53,9 @@ public class Main extends Application{
 	
 	private MediaPlayer music;
 	
-	private Label score;
-	private Label level;
-	private Label lines;
+	private Label lblscore;
+	private Label lbllevel;
+	private Label lbllines;
 	private Label lblFinalScore;
 	private Label lblHighscore;
 	
@@ -121,9 +121,9 @@ public class Main extends Application{
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdHold = new GridPane();
 		// sets the spacing
-		grdHold.setVgap(SPACE);
-		grdHold.setHgap(SPACE);
-		grdHold.setPadding(new Insets(SPACE));
+		grdHold.setVgap(0);
+		grdHold.setHgap(0);
+		grdHold.setPadding(new Insets(0));
 		
 		// creating the constraints for each cell
 		for (int i = 0; i < Grid.WIDTH-6; i++) {
@@ -150,7 +150,6 @@ public class Main extends Application{
 				animation.pause();
 				music.pause();
 				running = false;
-				music.pause();
 				showPauseScreen();
 			} else {
 				animation.play();
@@ -169,39 +168,60 @@ public class Main extends Application{
 		// creating the gridpane to serve as the grid for the tetris blocks
 		grdNext = new GridPane();
 		// sets the spacing
-		grdNext.setVgap(SPACE);
-		grdNext.setHgap(SPACE);
-		grdNext.setPadding(new Insets(SPACE));
+		grdNext.setVgap(0);
+		grdNext.setHgap(0);
+		grdNext.setPadding(new Insets(0));
 		
 		// creating the constraints for each cell
 		for (int i = 0; i < Grid.WIDTH-6; i++) {
 			grdNext.getColumnConstraints().add(new ColumnConstraints(SIZE));
-			grdNext.getRowConstraints().add(new RowConstraints(SIZE));
+			if (i < 2) {
+				grdNext.getRowConstraints().add(new RowConstraints(SIZE));
+			}
 		}
 		
 		VBox vbxNext = new VBox(lblNext, grdNext);
 		vbxNext.setPadding(new Insets(5));
 		vbxNext.setSpacing(10);
 				
-		score = new Label("Score: 0");
-		score.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lblscore = new Label("Score: 0");
+		lblscore.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
-		level = new Label("Level: 0");
-		level.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lbllevel = new Label("Level: 0");
+		lbllevel.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 
-		lines = new Label("Cleared Lines: 0");
-		lines.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lbllines = new Label("Cleared Lines: 0");
+		lbllines.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
 		lblHighscore = new Label("Highscore: 0");
 		lblHighscore.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
-		VBox hbxLabels = new VBox(score, level, lines, lblHighscore);
-		hbxLabels.setPadding(new Insets(5));
-		hbxLabels.setSpacing(10);
+		VBox vbxLabels = new VBox(lblscore, lbllevel, lbllines, lblHighscore);
+		vbxLabels.setPadding(new Insets(5));
+		vbxLabels.setSpacing(10);
 		
-		VBox hbxLeftSide = new VBox(vbxNext, hbxLabels);
+		Label lblControlTitle = new Label("Controls:");
+		lblControlTitle.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		
+		Label lblControls = new Label(			
+				"A -> left"
+				+ "\nD -> Right"
+				+ "\nS -> Soft Drop"
+				+ "\nSPACE -> Hard Drop"
+				+ "\nQ -> Rotate Left"
+				+ "\nE -> Rotate Right"
+				+ "\nG -> Save"
+				+ "\nH -> Load"
+				+ "\nCRTL -> Pause");
+		lblControls.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		
+		VBox vbxControls = new VBox(lblControlTitle, lblControls);
+		vbxControls.setPadding(new Insets(5));
+		vbxControls.setSpacing(10);
+		
+		VBox hbxLeftSide = new VBox(vbxNext, vbxLabels, vbxControls);
 		hbxLeftSide.setPadding(new Insets(5));
-		hbxLeftSide.setSpacing(10);
+		hbxLeftSide.setSpacing(50);
 		
 		// creating an hbox to serve as the root
 		HBox root = new HBox();
@@ -222,15 +242,16 @@ public class Main extends Application{
 		Image imgPause = new Image(getClass().getResource("/img/pauseSymbol.png").toString());
 		ImageView pauseLogo = new ImageView(imgPause);  // Image of pause symbol
 		
-		Label lblResume = new Label("Press Space to Resume");   // Title of pause screen
+		Label lblResume = new Label("Press Control to Resume");   // Title of pause screen
 		lblResume.setFont(Font.font("Impact", MEDIUM_FONT));
 		lblResume.setStyle("-fx-text-fill: #FF0000");
 		
 		
 		vbxPauseScreen = new VBox(10);
+		
 		vbxPauseScreen.getChildren().addAll(lblPaused, pauseLogo, lblResume);
 		vbxPauseScreen.setAlignment(Pos.CENTER);  // Centering all elements in the vbox
-		vbxPauseScreen.setStyle("-fx-background-color: #d3d3d3");
+		vbxPauseScreen.setStyle("-fx-background-color: rgb(211,211,211,0.85)");
 		
 	
 		//  Game over screen
@@ -287,10 +308,10 @@ public class Main extends Application{
 					grid.drop();
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.CONTROL)) {
-					if (running) {
-						animation.pause();
-						running = false;
-					}
+					animation.pause();
+					music.pause();
+					running = false;
+					showPauseScreen();
 				} else if (e.getCode().equals(KeyCode.G)) {
 					grid.save();
 					updateGridColor();
@@ -300,19 +321,16 @@ public class Main extends Application{
 				}
 			} else {
 				if (grid.getGameOver() == false && e.getCode().equals(KeyCode.CONTROL)) {
+					hidePauseScreen();
 					animation.play();
 					running = true;
+					music.play();
 				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.G)) {
 					grid.save();
 					updateGridColor();
 				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.H)) {
 					grid.load();
 					updateGridColor();
-				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.SPACE) ) {
-					hidePauseScreen();
-					animation.play();
-					running = true;
-					music.play();
 				} else if (grid.getGameOver() == true && e.getCode().equals(KeyCode.N)) {
 		            startNewGame();
 		            music.play();
@@ -456,9 +474,9 @@ public class Main extends Application{
 	 * updates the games labels
 	 */
 	private void updateLabels() {
-		score.setText("Score: "+grid.getScore());
-		level.setText("level: "+grid.getLevel());
-		lines.setText("Cleared Lines: "+grid.getLines());
+		lblscore.setText("Score: "+grid.getScore());
+		lbllevel.setText("level: "+grid.getLevel());
+		lbllines.setText("Cleared Lines: "+grid.getLines());
 		lblFinalScore.setText("Final Score: " + grid.getScore());
 		lblHighscore.setText("Highscore: " + grid.getHighscore());
 	}
