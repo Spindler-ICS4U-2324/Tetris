@@ -30,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simpleIO.Console;
 
 /**
  * @author jake pommainville and rohan daves
@@ -300,10 +301,13 @@ public class Main extends Application{
 					animation.play();
 					running = true;
 					music.play();
-				}
+				} else if (grid.getGameOver() == true && e.getCode().equals(KeyCode.N)) {
+		            startNewGame();
+		            music.play();
+		            stkAllScreens.getChildren().remove(vbxGameOverScreen);
+		            running = true;
+		        }
 			}
-			
-			
 		});
 		
 		animationFirstTime = true;
@@ -425,20 +429,9 @@ public class Main extends Application{
 	private void showGameOverScreen() {
 		updateLabels();
 		
+		running = false;
+		
 		stkAllScreens.getChildren().add(vbxGameOverScreen);
-		
-		// Event handler to resume game
-		stkAllScreens.getScene().setOnKeyPressed(e -> {
-	        if (e.getCode().equals(KeyCode.N)) {
-	            startNewGame();
-	            music.play();
-	            stkAllScreens.getChildren().remove(vbxGameOverScreen);
-	            
-
-	        }
-	        
-	    });
-		
 	}
 	
 	/**
