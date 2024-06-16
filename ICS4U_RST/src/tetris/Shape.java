@@ -2,8 +2,6 @@ package tetris;
 
 import java.util.ArrayList;
 
-import temp.Board;
-
 /**
  * 
  * @author: Rohan Daves and Jake Pommainville
@@ -170,7 +168,6 @@ public class Shape {
 		
 	}
 	
-
 	/**
 	 * A method which rotates a shape 90 degrees counter clockwise
 	 * 
@@ -182,7 +179,7 @@ public class Shape {
 	public void rotateShape( ArrayList<Block> gridBlocks, int direction) {
 		
 		// Variable Definition
-			int gridWidth = Board.WIDTH; // the width of the tetris grid
+			int gridWidth = Grid.WIDTH; // the width of the tetris grid
 			int centralX = blocks.get(1).getX();  // Gets the x coordinate for the block which the shape will be rotated about
 			int centralY = blocks.get(1).getY();  // Gets the y coordinate for the block which the shape will be rotated about
 			int relativeX;  // Relative x and y when viewing the central x and y as the origin
