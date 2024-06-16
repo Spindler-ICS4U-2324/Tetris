@@ -605,17 +605,19 @@ public class Grid {
 		// creates a printWriter
 		PrintWriter filePrinter;
 		
+		// creates a new file for the save data in the save folder
 		try {
-			File file = new File("C:/Users/jakep/Tetris.txt");
-		    file.mkdir();
+			File file = new File("C:\\Tetris\\save\\Tetris.txt");
+		    file.getParentFile().mkdirs();
 		    file.createNewFile();
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
 		
 		try {
-			// creates a new fileWriter from the Tetris.txt file
-			fileWrite = new FileWriter("C:/Users/jakep/Tetris.txt");
+			// gets the file at the specified dir
+			File dir = new File("C:/Tetris/save/Tetris.txt");
+			fileWrite = new FileWriter(dir);
 			// creates a file printerWriter using the fileWrite
 			filePrinter = new PrintWriter(fileWrite);
 			
@@ -683,7 +685,7 @@ public class Grid {
 		// attempts to load data from a file
 		try {
 			// create fileReader to read the data from the Tetris.txt file
-			FileReader passengerFile = new FileReader("C:/Users/jakep/Tetris.txt");
+			FileReader passengerFile = new FileReader("C:/Tetris/save/Tetris.txt");
 			// creates a buggered reader using the fileReader
 			BufferedReader passengerStream = new BufferedReader(passengerFile);
 	

@@ -1,6 +1,5 @@
 package tetris;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javafx.animation.PauseTransition;
@@ -30,7 +29,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simpleIO.Console;
 
 /**
  * @author jake pommainville and rohan daves
@@ -82,13 +80,11 @@ public class Main extends Application{
 	public void start(Stage stage) throws Exception {
 		highscore = 0;
 		stkAllScreens = new StackPane();
-		
-		Console.print("shiit");
-		
+				
 		this.stage = stage;
 		// TODO get music to loop
 		try {
-			music = new MediaPlayer(new Media(Main.class.getClassLoader().getResource("Tetris.mp3").toURI().toString()));
+			music = new MediaPlayer(new Media(Main.class.getClassLoader().getResource("music/Tetris.mp3").toURI().toString()));
 			music.volumeProperty().set(0.05);
 			music.setAutoPlay(true);
 			music.setCycleCount(MediaPlayer.INDEFINITE);
