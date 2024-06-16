@@ -435,41 +435,59 @@ public class Main extends Application{
 	 * updates each cell on the grid and changes it's color based on the block
 	 */
 	private void updateGridColor() {
+		// checks if the game is not over
 		if (!grid.getGameOver()) {
+			// clears the game gridpane
 			grdTetris.getChildren().clear();
 			
+			// checkes if the game speed changed and creates a new sequential transition
 			if (shapeSpeed != grid.getSpeed()) {
 				animation.stop();
 				updateBlocks();
 			}
 			
+			// gets every block on the grid
 			ArrayList<Block> blocks = grid.getBlocks();
 			
+			// runs a loop for each x and y pos in the grid
 			for (int i = 0; i < Grid.HEIGHT; i++) {
 				for (int j = 0; j < Grid.WIDTH; j++) {
+					// creates a block to compare to the array
 					Block currentBlock = new Block(j, i);
-					Group group = new Group();
-					Rectangle square = new Rectangle(SIZE, SIZE);
-					square.setStroke(Color.DIMGRAY);
+					// creates a group to store everything in
+					Group group = new Group();					
 					
+					// checks if there is a block at the current x, y pos
 					if (blocks.contains(currentBlock)) {
+						// creates a rectangle with the the color of the blocks type at the current x, y pos
 						group = getGroup(getColor(blocks.get(blocks.indexOf(currentBlock)).getType()));
 					} else {
+						// creates a gray rectangle if there is no blocks
+						Rectangle square = new Rectangle(SIZE, SIZE);
+						square.setStroke(Color.DIMGRAY);
 						square.setFill(Color.BLACK);
 						group.getChildren().add(square);
 					}
-										
+					
+					// adds the group to the gridpane
 					grdTetris.add(group, j, i);
 				}
 			}
 			
+			// updates the hold grid
 			updateInfoGrid(true, grdHold);
+			// updates the next grid
 			updateInfoGrid(false, grdNext);
+			// updates the labels
 			updateLabels();
 		} else {
+			// sets the highscore variable to the grid highscore
 			highscore = grid.getHighscore();
+			// shows the gameover screen
 			showGameOverScreen();
+			// stops the shapes from updating
 			animation.stop();
+			// pauses the music
 			music.pause();
 		}
 	}
