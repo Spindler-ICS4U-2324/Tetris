@@ -30,7 +30,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import simpleIO.Console;
 
 /**
  * @author jake pommainville and rohan daves
@@ -51,7 +50,7 @@ public class Main extends Application{
 	private Grid grid;
 	private int shapeSpeed;
 	private boolean running;
-	private boolean animationFirstTime;
+	private boolean fistStart;
 	
 	private MediaPlayer music;
 	
@@ -59,6 +58,9 @@ public class Main extends Application{
 	private Label level;
 	private Label lines;
 	private Label lblFinalScore;
+	private Label lblHighscore;
+	
+	private int highscore;
 	
 	private SequentialTransition animation;
 	PauseTransition pauseTransition;
@@ -71,7 +73,13 @@ public class Main extends Application{
 	Stage stage;
 	
 	@Override
+	public void stop() {
+		grid.save();
+	}
+	
+	@Override
 	public void start(Stage stage) throws Exception {
+		highscore = 0;
 		stkAllScreens = new StackPane();
 		
 		this.stage = stage;
@@ -181,7 +189,10 @@ public class Main extends Application{
 		lines = new Label("Cleared Lines: 0");
 		lines.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
-		VBox hbxLabels = new VBox(score, level, lines);
+		lblHighscore = new Label("Highscore: 0");
+		lblHighscore.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		
+		VBox hbxLabels = new VBox(score, level, lines, lblHighscore);
 		hbxLabels.setPadding(new Insets(5));
 		hbxLabels.setSpacing(10);
 		
@@ -287,16 +298,16 @@ public class Main extends Application{
 					updateGridColor();
 				}
 			} else {
-				if (e.getCode().equals(KeyCode.CONTROL)) {
+				if (grid.getGameOver() == false && e.getCode().equals(KeyCode.CONTROL)) {
 					animation.play();
 					running = true;
-				} else if (e.getCode().equals(KeyCode.G)) {
+				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.G)) {
 					grid.save();
 					updateGridColor();
-				} else if (e.getCode().equals(KeyCode.H)) {
+				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.H)) {
 					grid.load();
 					updateGridColor();
-				} else if (e.getCode().equals(KeyCode.SPACE) ) {
+				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.SPACE) ) {
 					hidePauseScreen();
 					animation.play();
 					running = true;
@@ -310,7 +321,7 @@ public class Main extends Application{
 			}
 		});
 		
-		animationFirstTime = true;
+		fistStart = true;
 		
 		startNewGame();
 	
@@ -328,8 +339,13 @@ public class Main extends Application{
 	/**
 	 * starts a new game
 	 */
-	private void startNewGame() {
-		grid = new Grid();
+	private void startNewGame() {			
+		grid = new Grid(highscore);
+		
+		if (fistStart) {
+			grid.load();
+		}
+		
 		shapeSpeed = grid.getSpeed();
 		
 		updateGridColor();
@@ -357,10 +373,10 @@ public class Main extends Application{
 	private void updateBlocks() {
 		shapeSpeed = grid.getSpeed();
 				
-		if (!animationFirstTime) {
+		if (!fistStart) {
 			animation.stop();
 		} else {
-			animationFirstTime = false;
+			fistStart = false;
 		}
 		
 		animation = new SequentialTransition();
@@ -417,6 +433,7 @@ public class Main extends Application{
 			updateInfoGrid(false, grdNext);
 			updateLabels();
 		} else {
+			highscore = grid.getHighscore();
 			showGameOverScreen();
 			animation.stop();
 			music.pause();
@@ -442,6 +459,7 @@ public class Main extends Application{
 		level.setText("level: "+grid.getLevel());
 		lines.setText("Cleared Lines: "+grid.getLines());
 		lblFinalScore.setText("Final Score: " + grid.getScore());
+		lblHighscore.setText("Highscore: " + grid.getHighscore());
 	}
 
 	/**

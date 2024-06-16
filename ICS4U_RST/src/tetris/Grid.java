@@ -48,6 +48,11 @@ public class Grid {
 	private int level;
 	
 	/**
+	 * an {@code int} for the highscore of the game
+	 */
+	private int highscore;
+	
+	/**
 	 * a {@code Shape} for the current shape used in the game
 	 */
 	private Shape currentShape;
@@ -64,7 +69,7 @@ public class Grid {
 	/**
 	 * the constructor for the Grid class
 	 */
-	Grid() {
+	Grid(int highscore) {
 		blocks = new ArrayList<Block>();
 		nextShapes = new ArrayList<Shape>();
 
@@ -73,9 +78,10 @@ public class Grid {
 		numClearedLines = 0;
 		level = 0;
 		score = 0;
-		speed = 800;
+		speed = 633;
 		
 		holdShape = null;
+		this.highscore = highscore;
 		
 		updateNextShapes();
 		createNewShape();
@@ -212,6 +218,7 @@ public class Grid {
 		level = numClearedLines / 10;
 				
 		updateSpeed();
+		saveHighscore();
 	}
 
 	/**
@@ -219,27 +226,27 @@ public class Grid {
 	 */
 	private void updateSpeed() {
 		if (level == 0) {
-			speed = 800;
-		} else if (level == 1) {
-			speed = 716;
-		} else if (level == 2) {
 			speed = 633;
-		} else if (level == 3) {
-			speed = 550;
-		} else if (level == 4) {
+		} else if (level == 1) {
 			speed = 466;
-		} else if (level == 5) {
+		} else if (level == 2) {
 			speed = 383;
-		} else if (level == 6) {
+		} else if (level == 3) {
 			speed = 300;
-		} else if (level == 7) {
-			speed = 216;
-		} else if (level == 8) {
-			speed = 133;
-		} else if (level == 9) {
+		} else if (level == 4) {
+			speed = 183;
+		} else if (level == 5) {
+			speed = 150;
+		} else if (level == 6) {
 			speed = 100;
+		} else if (level == 7) {
+			speed = 85;
+		} else if (level == 8) {
+			speed = 75;
+		} else if (level == 9) {
+			speed = 65;
 		} else if (9 < level && level < 19) {
-			speed = 66;
+			speed = 55;
 		} else if (18 < level && level < 29) {
 			speed =  33;
 		} else {
@@ -265,6 +272,10 @@ public class Grid {
 		}
 		
 		score += lineMultiplier * (level + 1);
+	}
+	
+	public int getHighscore() {
+		return highscore;
 	}
 
 	/**
@@ -386,6 +397,7 @@ public class Grid {
 	private boolean checkTop() {
 		for (Block i : currentShape.getBlocks()) {
 			if (i.getY() == 0) {
+				saveHighscore();
 				return true;
 			} 
 		}
@@ -393,6 +405,12 @@ public class Grid {
 		return false;
 	}
 	
+	private void saveHighscore() {
+		if (score > highscore) {
+			highscore = score;
+		}
+	}
+
 	/**
 	 * checks if there are blocks below the current {@code Shape}
 	 * 
@@ -536,6 +554,8 @@ public class Grid {
 				filePrinter.println(nextShapes.get(i).getType());
 			}
 			
+			filePrinter.println(highscore);
+			
 			// closes the file
 			fileWrite.close();		
 		} catch(Exception e) {
@@ -588,6 +608,8 @@ public class Grid {
 	    	for (int i = 0; i < size; i++) {
 	    		nextShapes.add(new Shape(Integer.parseInt(passengerStream.readLine())));
 	    	}
+	    	
+	    	highscore = Integer.parseInt(passengerStream.readLine());
 	    	
 	    	// closes the file
 	    	passengerFile.close();
