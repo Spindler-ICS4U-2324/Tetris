@@ -175,8 +175,10 @@ public class Shape {
 	 * 		An {@code int} representing how many squares (spaces in grid) wide the tetris grid is
 	 * @param gridBlocks
 	 * 		An {code ArrayList} that stores the information of all the blocks on the tetris grid
+	 * @param direction
+	 * 		An {@code int} that stores the direction of rotation. Clockwise (0) or counterclockwise (1) are the possible inputs.
 	 */
-	public void rotateCounterClockwise(int gridWidth, ArrayList<Block> gridBlocks) {
+	public void rotateShape(int gridWidth, ArrayList<Block> gridBlocks, int direction) {
 		
 		// Variable Definition
 			int centralX = blocks.get(1).getX();  // Gets the x coordinate for the block which the shape will be rotated about
@@ -195,18 +197,37 @@ public class Shape {
 		if (blocks.get(0).getType() != 4) {   // Only rotates the shape if it isn't a square block, which doesn't need rotation
 			
 			for (Block currentBlock : blocks) {
-				initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
-				initialY[increment] = currentBlock.getY();
 				
-				relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
-				relativeY = currentBlock.getY() - centralY;
+				if (direction == 1) {  // If shape is to be rotated counterclockwise
+					initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
+					initialY[increment] = currentBlock.getY();
+				
+					relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
+					relativeY = currentBlock.getY() - centralY;
 
-				translatedX = relativeY;   // Uses (y,-x) to rotate the block 90 degrees counter clockwise
-				translatedY = -relativeX;
+					translatedX = relativeY;   // Uses (y,-x) to rotate the block 90 degrees counter clockwise
+					translatedY = -relativeX;
 
-				currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
-				currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the
-															  // grid
+					currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
+					currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
+															  
+				} else if (direction == 0) {  // If the shape is to be rotated clockwise
+					
+					initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
+					initialY[increment] = currentBlock.getY();
+					
+					relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
+					relativeY = currentBlock.getY() - centralY;
+
+					translatedX = -relativeY;   // Uses (-y,x) to rotate the block 90 degrees clockwise
+					translatedY = relativeX;
+
+					currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
+					currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
+					
+				}
+				
+				
 
 				if (currentBlock.getX() < 0) {  // If a coordinate is less than 0, it's out of bounds to the left
 					isLeftBreached = true;
@@ -303,79 +324,79 @@ public class Shape {
 		
 	}
 
-	/**
-	 * A method which rotates a shape 90 degrees clockwise
-	 * @param gridWidth
-	 * 		An {@code int} representing how many squares (spaces in grid) wide the tetris grid is
-	 * @param gridBlocks
-	 * 		An {code ArrayList} that stores the information of all the blocks on the tetris grid
-	 */
-	public void rotateClockwise(int gridWidth, ArrayList<Block> gridBlocks) {
-		
-		// Variable Definition
-		int centralX = blocks.get(1).getX();  // Gets the x coordinate for the block which the shape will be rotated about
-		int centralY = blocks.get(1).getY();  // Gets the y coordinate for the block which the shape will be rotated about		  
-		int relativeX;  // Relative x and y when viewing the central x and y as the origin
-		int relativeY;
-		int translatedX;  // Translated coordinates (90 degree shift) of the block compared to the relative origin
-		int translatedY;
-		boolean isLeftBreached = false;  // Boolean variables which track if the shape exceeds the left or right boundary
-		boolean isRightBreached = false;  // after being rotated.
-		boolean isBottomBreached = false;   // Detects if a block has exceeded the bottom border of the grid
-		int [] initialX = new int[4];  // Initial x-coordinate of the block
-		int [] initialY = new int[4];  // Initial y-coordinate of the block
-		int increment = 0;  // Increments through initial y and x arrays
-
-		if (blocks.get(0).getType() != 4) {   // Only rotates the shape if it isn't a square block, which doesn't need rotation
-			
-			for (Block currentBlock : blocks) {
-				initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
-				initialY[increment] = currentBlock.getY();
-				
-				relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
-				relativeY = currentBlock.getY() - centralY;
-
-				translatedX = -relativeY;   // Uses (y,-x) to rotate the block 90 degrees clockwise
-				translatedY = relativeX;
-
-				currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
-				currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
-
-				if (currentBlock.getX() < 0) {  // If a coordinate is less than 0, it's out of bounds to the left
-					isLeftBreached = true;
-
-				} else if (currentBlock.getX() > (gridWidth - 1)) {  // If a coordinate is greater than gridWidth-1,
-					isRightBreached = true;       // it's out of bounds to the right.
-
-				}
-				
-				if (currentBlock.getY() > (Grid.HEIGHT - 1)) { // If the bottom of the grid is breached
-					isBottomBreached = true;
-				}
-				
-				increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
-
-			}
-			
-			moveShapeInBounds(isRightBreached, isLeftBreached, gridWidth, isBottomBreached);  // Moves the shape in bounds of the grid
-			
-			if (isBlockBeside(gridBlocks)) {  // If there is a block beside which will be rotated into
-				
-				increment = 0;  // Resets the incrementer for resetting coordinates
-				
-				for (Block currentBlock : blocks) {  // Returns all coordinates of shape to original coordinates
-					currentBlock.setX(initialX[increment]);  // Resets the current block's coordinates
-					currentBlock.setY(initialY[increment]);
-					
-					increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
-				}
-				
-			}
-				
-			
-		}
-		
-	}
+//	/**
+//	 * A method which rotates a shape 90 degrees clockwise
+//	 * @param gridWidth
+//	 * 		An {@code int} representing how many squares (spaces in grid) wide the tetris grid is
+//	 * @param gridBlocks
+//	 * 		An {code ArrayList} that stores the information of all the blocks on the tetris grid
+//	 */
+//	public void rotateClockwise(int gridWidth, ArrayList<Block> gridBlocks) {
+//		
+//		// Variable Definition
+//		int centralX = blocks.get(1).getX();  // Gets the x coordinate for the block which the shape will be rotated about
+//		int centralY = blocks.get(1).getY();  // Gets the y coordinate for the block which the shape will be rotated about		  
+//		int relativeX;  // Relative x and y when viewing the central x and y as the origin
+//		int relativeY;
+//		int translatedX;  // Translated coordinates (90 degree shift) of the block compared to the relative origin
+//		int translatedY;
+//		boolean isLeftBreached = false;  // Boolean variables which track if the shape exceeds the left or right boundary
+//		boolean isRightBreached = false;  // after being rotated.
+//		boolean isBottomBreached = false;   // Detects if a block has exceeded the bottom border of the grid
+//		int [] initialX = new int[4];  // Initial x-coordinate of the block
+//		int [] initialY = new int[4];  // Initial y-coordinate of the block
+//		int increment = 0;  // Increments through initial y and x arrays
+//
+//		if (blocks.get(0).getType() != 4) {   // Only rotates the shape if it isn't a square block, which doesn't need rotation
+//			
+//			for (Block currentBlock : blocks) {
+//				initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
+//				initialY[increment] = currentBlock.getY();
+//				
+//				relativeX = currentBlock.getX() - centralX;  // Makes the central coordinates the origin
+//				relativeY = currentBlock.getY() - centralY;
+//
+//				translatedX = -relativeY;   // Uses (-y,x) to rotate the block 90 degrees clockwise
+//				translatedY = relativeX;
+//
+//				currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
+//				currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
+//
+//				if (currentBlock.getX() < 0) {  // If a coordinate is less than 0, it's out of bounds to the left
+//					isLeftBreached = true;
+//
+//				} else if (currentBlock.getX() > (gridWidth - 1)) {  // If a coordinate is greater than gridWidth-1,
+//					isRightBreached = true;       // it's out of bounds to the right.
+//
+//				}
+//				
+//				if (currentBlock.getY() > (Grid.HEIGHT - 1)) { // If the bottom of the grid is breached
+//					isBottomBreached = true;
+//				}
+//				
+//				increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
+//
+//			}
+//			
+//			moveShapeInBounds(isRightBreached, isLeftBreached, gridWidth, isBottomBreached);  // Moves the shape in bounds of the grid
+//			
+//			if (isBlockBeside(gridBlocks)) {  // If there is a block beside which will be rotated into
+//				
+//				increment = 0;  // Resets the incrementer for resetting coordinates
+//				
+//				for (Block currentBlock : blocks) {  // Returns all coordinates of shape to original coordinates
+//					currentBlock.setX(initialX[increment]);  // Resets the current block's coordinates
+//					currentBlock.setY(initialY[increment]);
+//					
+//					increment++;  // Increases the incrementer to add to next indices in initialX and initalY arrays
+//				}
+//				
+//			}
+//				
+//			
+//		}
+//		
+//	}
 
 }
  
