@@ -333,14 +333,14 @@ public class Grid {
 	 * rotates the shape left
 	 */
 	public void rotateLeft() {
-		currentShape.rotateCounterClockwise(WIDTH, this.blocks);
+		currentShape.rotateShape(this.blocks, 1);
 	}
 	
 	/**
 	 * rotates the shape right
 	 */
 	public void rotateRight() {
-		currentShape.rotateClockwise(WIDTH, this.blocks);
+		currentShape.rotateShape(this.blocks, 0);
 	}
 	
 	/**
