@@ -30,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import simpleIO.Console;
 
 /**
  * @author jake pommainville and rohan daves
@@ -82,21 +83,27 @@ public class Main extends Application{
 		highscore = 0;
 		stkAllScreens = new StackPane();
 		
+		Console.print("shiit");
+		
 		this.stage = stage;
 		// TODO get music to loop
-		music = new MediaPlayer(new Media(new File("res/music/Tetris.mp3").toURI().toString()));
-		music.volumeProperty().set(0.05);
-		music.setAutoPlay(true);
-		music.setCycleCount(MediaPlayer.INDEFINITE);
-		//music.play();
-		
-		music.setOnEndOfMedia(new Runnable() {   // Learned from  https://stackoverflow.com/questions/43190594/javafx-mediaplayer-loop
-			@Override
-	        public void run() {
-	        	music.seek(Duration.ZERO);
-	        	music.play();
-	        }
-	    });
+		try {
+			music = new MediaPlayer(new Media(Main.class.getClassLoader().getResource("Tetris.mp3").toURI().toString()));
+			music.volumeProperty().set(0.05);
+			music.setAutoPlay(true);
+			music.setCycleCount(MediaPlayer.INDEFINITE);
+			//music.play();
+			
+			music.setOnEndOfMedia(new Runnable() {   // Learned from  https://stackoverflow.com/questions/43190594/javafx-mediaplayer-loop
+				@Override
+		        public void run() {
+		        	music.seek(Duration.ZERO);
+		        	music.play();
+		        }
+		    });
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		
 		// creating the gridpane to serve as the grid for the tetris blocks
@@ -329,7 +336,7 @@ public class Main extends Application{
 		// changing the title
 		stage.setTitle("Tetris");
 		// setting icon image
-		stage.getIcons().add(new Image("file:res/img/Tetris_logo.png"));
+		stage.getIcons().add(new Image(getClass().getResource("/img/Tetris_logo.png").toString()));
 		// showing the scene
 		stage.show();
 	}

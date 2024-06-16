@@ -1,6 +1,7 @@
 package tetris;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -605,8 +606,16 @@ public class Grid {
 		PrintWriter filePrinter;
 		
 		try {
-			// creates a new fileWriter from the passenger.txt file
-			fileWrite = new FileWriter("data/Tetris.txt");
+			File file = new File("C:/Users/jakep/Tetris.txt");
+		    file.mkdir();
+		    file.createNewFile();
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+		
+		try {
+			// creates a new fileWriter from the Tetris.txt file
+			fileWrite = new FileWriter("C:/Users/jakep/Tetris.txt");
 			// creates a file printerWriter using the fileWrite
 			filePrinter = new PrintWriter(fileWrite);
 			
@@ -674,7 +683,7 @@ public class Grid {
 		// attempts to load data from a file
 		try {
 			// create fileReader to read the data from the Tetris.txt file
-			FileReader passengerFile = new FileReader("data/Tetris.txt");
+			FileReader passengerFile = new FileReader("C:/Users/jakep/Tetris.txt");
 			// creates a buggered reader using the fileReader
 			BufferedReader passengerStream = new BufferedReader(passengerFile);
 	
