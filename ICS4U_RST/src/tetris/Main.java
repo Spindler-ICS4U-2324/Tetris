@@ -66,7 +66,7 @@ public class Main extends Application{
 	
 	final private static int SIZE = 40;
 	final private static int SPACE = -1;
-	final private static int HUGE_FONT = 70;
+	final private static int HUGE_FONT = 70;  // Font sizes used for labels within the pause and game over screens
 	final private static int MEDIUM_FONT = 25;
 	
 	Stage stage;
@@ -79,35 +79,35 @@ public class Main extends Application{
 	@Override
 	public void start(Stage stage) throws Exception {
 		highscore = 0;
-		stkAllScreens = new StackPane();
+		stkAllScreens = new StackPane();   // This stackpane acts as the root of the application
 				
 		this.stage = stage;
-		// TODO get music to loop
+		
 		try {
-			music = new MediaPlayer(new Media(Main.class.getClassLoader().getResource("music/Tetris.mp3").toURI().toString()));
-			music.volumeProperty().set(0.05);
-			music.setAutoPlay(true);
-			music.setCycleCount(MediaPlayer.INDEFINITE);
+			music = new MediaPlayer(new Media(Main.class.getClassLoader().getResource("music/Tetris.mp3").toURI().toString()));  // uses MediaPlayer to play music
+			music.volumeProperty().set(0.05);  // Turns the volume down
+			music.setAutoPlay(true);  // Autoplays the music (when completed, it will restart)
+			music.setCycleCount(MediaPlayer.INDEFINITE);  // Restarts the music indefinitely
 			//music.play();
 			
 			music.setOnEndOfMedia(new Runnable() {   // Learned from  https://stackoverflow.com/questions/43190594/javafx-mediaplayer-loop
 				@Override
-		        public void run() {
+		        public void run() {   // Ensures that the music keeps repeating
 		        	music.seek(Duration.ZERO);
 		        	music.play();
 		        }
 		    });
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {   // If something goes wrong
+			e.printStackTrace();  // Prints the stacktrace to help with understanding the issue and troubleshooting
 		}
 		
 		
 		// creating the gridpane to serve as the grid for the tetris blocks
-		grdTetris = new GridPane();
+		grdTetris = new GridPane();   // Instantiating the gridPane which will hold the tetris game
 		// sets the spacing
-		grdTetris.setVgap(SPACE);
+		grdTetris.setVgap(SPACE);   // Setting the spacing between rows and columns
 		grdTetris.setHgap(SPACE);
-		grdTetris.setPadding(new Insets(SPACE));
+		grdTetris.setPadding(new Insets(SPACE));  // Setting padding for the gridpane
 		
 		// creating the constraints for each cell
 		for (int i = 0; i < Grid.WIDTH; i++) {
@@ -131,44 +131,44 @@ public class Main extends Application{
 			grdHold.getRowConstraints().add(new RowConstraints(SIZE));
 		}
 		
-		VBox vbxHold = new VBox(lblHold, grdHold);
-		vbxHold.setPadding(new Insets(5));
-		vbxHold.setSpacing(10);
+		VBox vbxHold = new VBox(lblHold, grdHold);  // Initializing the "hold" vbox
+		vbxHold.setPadding(new Insets(5));  // Setting padding for the vbox
+		vbxHold.setSpacing(10);   // Setting spacing for the vbox
 		
 		Rectangle rectPause = new Rectangle(150,150);  // Makes a rectangle
-		rectPause.setFill(Color.LIGHTGRAY);
-		rectPause.setStroke(Color.BLACK);
+		rectPause.setFill(Color.LIGHTGRAY);  // Painting the rectangle light gray
+		rectPause.setStroke(Color.BLACK);   // Painting the outline of the rectangle black
 	
 		Image imgSmallPause = new Image(getClass().getResource("/img/miniPause.png").toString());
 		ImageView smallPauseLogo = new ImageView(imgSmallPause);  // Small pause logo
 		
-		StackPane pauseButton = new StackPane();
+		StackPane pauseButton = new StackPane();  // Stackpane which will countain all elements of the pause button
 		pauseButton.getChildren().addAll(rectPause, smallPauseLogo);  // Stacks the pause logo on top of the rectanlge
 		
-		pauseButton.setOnMouseClicked(e -> {   // IF the stackpane containing pause logo is clicked
-			if (running) {
-				animation.pause();
-				music.pause();
-				running = false;
-				showPauseScreen();
-			} else {
-				animation.play();
-				music.play();
-				running = true;
+		pauseButton.setOnMouseClicked(e -> {   // If the stackpane containing pause logo is clicked
+			if (running) {    // If the game is running
+				animation.pause();  // Pause animation
+				music.pause();   // Pause music
+				running = false;  // Make it so the game is not running
+				showPauseScreen();  // Show the pause screen
+			} else {  // If the game is not running
+				animation.play();   // Play the animation
+				music.play();  // Play the music
+				running = true;   // Run the game again
 			}
 		});
 		
-		VBox vbxRightSide = new VBox(vbxHold, pauseButton);
-		vbxRightSide.setPadding(new Insets(5));
+		VBox vbxRightSide = new VBox(vbxHold, pauseButton);  // VBox for area to the right of the tetris grid
+		vbxRightSide.setPadding(new Insets(5));  // Set the padding and spacing of the grid
 		vbxRightSide.setSpacing(425);
 		
-		Label lblNext = new Label("Next Shape:");
-		lblNext.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		Label lblNext = new Label("Next Shape:");  // Label to indicate the upcoming shape
+		lblNext.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));  // Setting the font, font weight, and font size of the label
 		
 		// creating the gridpane to serve as the grid for the tetris blocks
-		grdNext = new GridPane();
+		grdNext = new GridPane();   // Gridpane which still store the next shape
 		// sets the spacing
-		grdNext.setVgap(0);
+		grdNext.setVgap(0);  // Setting the gaps between columns, rows and padding to 0
 		grdNext.setHgap(0);
 		grdNext.setPadding(new Insets(0));
 		
@@ -180,30 +180,30 @@ public class Main extends Application{
 			}
 		}
 		
-		VBox vbxNext = new VBox(lblNext, grdNext);
-		vbxNext.setPadding(new Insets(5));
+		VBox vbxNext = new VBox(lblNext, grdNext);  // Creating a gridpane for the next shape
+		vbxNext.setPadding(new Insets(5));  // Setting some padding and spacing for this gridpane
 		vbxNext.setSpacing(10);
 				
-		lblscore = new Label("Score: 0");
-		lblscore.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lblscore = new Label("Score: 0");   // Default label for the player's score
+		lblscore.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));  // Setting the font, font weight, and font size of the label
 		
-		lbllevel = new Label("Level: 0");
-		lbllevel.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lbllevel = new Label("Level: 0");  // Default label and value for the player's level
+		lbllevel.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25)); // Setting the font, font weight, and font size of the label
 
-		lbllines = new Label("Cleared Lines: 0");
-		lbllines.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lbllines = new Label("Cleared Lines: 0");  // Default label and value for the number of lines cleared by the user
+		lbllines.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25)); // Setting the font, font weight, and font size of the label
 		
-		lblHighscore = new Label("Highscore: 0");
+		lblHighscore = new Label("Highscore: 0");  // Defauly label and value for the user's highscore (unless a highscore has been loaded with save file)
 		lblHighscore.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
-		VBox vbxLabels = new VBox(lblscore, lbllevel, lbllines, lblHighscore);
-		vbxLabels.setPadding(new Insets(5));
-		vbxLabels.setSpacing(10);
+		VBox vbxLabels = new VBox(lblscore, lbllevel, lbllines, lblHighscore);  // Places all labels into a vbox
+		vbxLabels.setPadding(new Insets(5));  // Setting spacing and padding for elements within the vbox
+		vbxLabels.setSpacing(10);  // Setting the font, font weight, and font size of the label
 		
-		Label lblControlTitle = new Label("Controls:");
-		lblControlTitle.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		Label lblControlTitle = new Label("Controls:");  // Label for the controls
+		lblControlTitle.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));  // Setting the font, font weight, and font size of the label
 		
-		Label lblControls = new Label(			
+		Label lblControls = new Label(			 // Labels for the different controls needed to play the game
 				"A -> left"
 				+ "\nD -> Right"
 				+ "\nS -> Soft Drop"
@@ -213,80 +213,80 @@ public class Main extends Application{
 				+ "\nG -> Save"
 				+ "\nH -> Load"
 				+ "\nCRTL -> Pause");
-		lblControls.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
+		lblControls.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));  // Setting the font, font weight, and font size of the label
 		
-		VBox vbxControls = new VBox(lblControlTitle, lblControls);
-		vbxControls.setPadding(new Insets(5));
+		VBox vbxControls = new VBox(lblControlTitle, lblControls);  // VBox holding the label and text for the game controls
+		vbxControls.setPadding(new Insets(5));  // Setting padding and spacing for elements within vbox
 		vbxControls.setSpacing(10);
 		
-		VBox hbxLeftSide = new VBox(vbxNext, vbxLabels, vbxControls);
-		hbxLeftSide.setPadding(new Insets(5));
-		hbxLeftSide.setSpacing(50);
+		VBox vbxLeftSide = new VBox(vbxNext, vbxLabels, vbxControls);  // VBox holding all visuals on left side of tetris grid
+		vbxLeftSide.setPadding(new Insets(5));  // Setting padding and spacing for elements within vbox
+		vbxLeftSide.setSpacing(50);
 		
 		// creating an hbox to serve as the root
-		HBox root = new HBox();
+		HBox gameRoot = new HBox();  // An HBox to hold the game screen
 		// setting the spacing
-		root.setPadding(new Insets(5));
-		root.setSpacing(300);
+		gameRoot.setPadding(new Insets(5));
+		gameRoot.setSpacing(300);
 		// adding the tetris grid to the root
-		root.getChildren().addAll(hbxLeftSide, grdTetris, vbxRightSide);
+		gameRoot.getChildren().addAll(vbxLeftSide, grdTetris, vbxRightSide);
 		
 		
 		//   Pause Screen
 		
 		
 		Label lblPaused = new Label("Paused");   // Title of pause screen
-		lblPaused.setFont(Font.font("Impact", HUGE_FONT));
-		lblPaused.setStyle("-fx-text-fill: #FF0000");
+		lblPaused.setFont(Font.font("Impact", HUGE_FONT));  // Setting the font, and font size of the label
+		lblPaused.setStyle("-fx-text-fill: #FF0000");   // Color of text
 		
 		Image imgPause = new Image(getClass().getResource("/img/pauseSymbol.png").toString());
 		ImageView pauseLogo = new ImageView(imgPause);  // Image of pause symbol
 		
 		Label lblResume = new Label("Press Control to Resume");   // Title of pause screen
-		lblResume.setFont(Font.font("Impact", MEDIUM_FONT));
-		lblResume.setStyle("-fx-text-fill: #FF0000");
+		lblResume.setFont(Font.font("Impact", MEDIUM_FONT));   // Setting the font, and font size of the label
+		lblResume.setStyle("-fx-text-fill: #FF0000");  // Color of text
 		
 		
-		vbxPauseScreen = new VBox(10);
+		vbxPauseScreen = new VBox(10);  // Instantiating new Vbox with spacing
 		
-		vbxPauseScreen.getChildren().addAll(lblPaused, pauseLogo, lblResume);
+		vbxPauseScreen.getChildren().addAll(lblPaused, pauseLogo, lblResume);  // Adding the pause label, logo, and resume instructions 
 		vbxPauseScreen.setAlignment(Pos.CENTER);  // Centering all elements in the vbox
-		vbxPauseScreen.setStyle("-fx-background-color: rgb(211,211,211,0.85)");
+		vbxPauseScreen.setStyle("-fx-background-color: rgb(211,211,211,0.85)");  //  Changes the background color of the pause screen
 		
 	
 		//  Game over screen
 		
-		Label lblGameOver = new Label ("Game Over");
-		lblGameOver.setFont(Font.font("Impact", HUGE_FONT));
-		lblGameOver.setStyle("-fx-text-fill: #FF0000");
+		Label lblGameOver = new Label ("Game Over");   // Label of the game over screen
+		lblGameOver.setFont(Font.font("Impact", HUGE_FONT));  // Font and font size of label
+		lblGameOver.setStyle("-fx-text-fill: #FF0000");  // Label color
 		
-		lblFinalScore = new Label();
-		lblFinalScore.setFont(Font.font("Impact", MEDIUM_FONT));
-		lblFinalScore.setStyle("-fx-text-fill: #00ff00");
+		lblFinalScore = new Label();  // Final score label (after player loses)
+		lblFinalScore.setFont(Font.font("Impact", MEDIUM_FONT));  // Font and font size
+		lblFinalScore.setStyle("-fx-text-fill: #00ff00");  // Font color
 		
-		Label lblRestart = new Label("Press  n  to Start New Game");   // Title of pause screen
-		lblRestart.setFont(Font.font("Impact", MEDIUM_FONT));
-		lblRestart.setStyle("-fx-text-fill: #FF0000");
+		Label lblRestart = new Label("Press  n  to Start New Game");   // Instructions to start a new game
+		lblRestart.setFont(Font.font("Impact", MEDIUM_FONT));   //  Font and font size
+		lblRestart.setStyle("-fx-text-fill: #FF0000");  // Colors the text
 		
-		vbxGameOverScreen = new VBox(30);
-		vbxGameOverScreen.getChildren().addAll(lblGameOver, lblFinalScore, lblRestart);
-		vbxGameOverScreen.setAlignment(Pos.CENTER);
-		vbxGameOverScreen.setStyle("-fx-background-color: #000000");
+		vbxGameOverScreen = new VBox(30);  // Instantiating new VBox for game over
+		vbxGameOverScreen.getChildren().addAll(lblGameOver, lblFinalScore, lblRestart);  // ADding the game over elements to the vbox
+		vbxGameOverScreen.setAlignment(Pos.CENTER);  // Centering elements within the VBox
+		vbxGameOverScreen.setStyle("-fx-background-color: #000000");  // Coloring the background
 		
 		
 		// Stack pane holding all possible elements
 		
-		stkAllScreens.getChildren().addAll(root);
+		stkAllScreens.getChildren().addAll(gameRoot); // Adding the game root (tetris game screen) to the stackPane (the root)
 		
 		
 		// creating a new scene with the root as the root node
-		Scene scene = new Scene(stkAllScreens);
+		Scene scene = new Scene(stkAllScreens);  // Creating a new scene with the root
 		
-		running = true;
+		running = true;  // Game is running
 		
-		scene.setOnKeyPressed(e -> {
-			if (running) {
-				if (e.getCode().equals(KeyCode.S)) {
+		scene.setOnKeyPressed(e -> {   // Detects if a key is pressed on the scene
+			if (running) {   // If the game is running
+				if (e.getCode().equals(KeyCode.S)) {   
 					grid.moveDown();
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.A)) {
@@ -319,30 +319,30 @@ public class Main extends Application{
 					grid.load();
 					updateGridColor();
 				}
-			} else {
-				if (grid.getGameOver() == false && e.getCode().equals(KeyCode.CONTROL)) {
-					hidePauseScreen();
-					animation.play();
-					running = true;
-					music.play();
-				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.G)) {
-					grid.save();
+			} else {  // If the game is not running
+				if (grid.getGameOver() == false && e.getCode().equals(KeyCode.CONTROL)) {  // If the game is not over and control is clicked
+					hidePauseScreen();  // Hide the pause screen, unpause the game
+					animation.play(); // Resume the animation
+					running = true;  // Make the game run
+					music.play();   // Play the music again
+				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.G)) {  // If the key pressed is G when the game is paused
+					grid.save();  // Save the grid
 					updateGridColor();
-				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.H)) {
-					grid.load();
+				} else if (grid.getGameOver() == false && e.getCode().equals(KeyCode.H)) {  // If the key pressed is H when the game is paused
+					grid.load();  // Load the save
 					updateGridColor();
-				} else if (grid.getGameOver() == true && e.getCode().equals(KeyCode.N)) {
-		            startNewGame();
-		            music.play();
-		            stkAllScreens.getChildren().remove(vbxGameOverScreen);
-		            running = true;
+				} else if (grid.getGameOver() == true && e.getCode().equals(KeyCode.N)) {  // If the game is over and N is pressed
+		            startNewGame();  // Start a new game
+		            music.play();  // Play music
+		            stkAllScreens.getChildren().remove(vbxGameOverScreen);  // Remove the gameOverScreen
+		            running = true;  // Run the game
 		        }
 			}
 		});
 		
 		fistStart = true;
 		
-		startNewGame();
+		startNewGame();  // Initial start of the game
 	
 		
 		// setting the scene to the scene

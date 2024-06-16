@@ -13,7 +13,7 @@ public class Block {
 	// Variable Definition
 	private int x;  // x-coordinate of block
 	private int y;  // y-coordinate of block
-	private int type;  // Colour of the block
+	private int type;  // Type of shape which this block forms
 
 	/**
 	 * The default constructor method to create a block

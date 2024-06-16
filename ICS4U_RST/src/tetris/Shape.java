@@ -38,7 +38,7 @@ public class Shape {
 	public void createShape() {
 		switch (type) {
 		case 1:    // Line block
-			this.blocks.add(new Block(3, 0, type));
+			this.blocks.add(new Block(3, 0, type));  // Default coordinates (spawin coordinates) of all types of shapes
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
 			this.blocks.add(new Block(6, 0, type));
