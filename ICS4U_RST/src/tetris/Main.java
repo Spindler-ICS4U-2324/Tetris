@@ -210,6 +210,7 @@ public class Main extends Application{
 				+ "\nSPACE -> Hard Drop"
 				+ "\nQ -> Rotate Left"
 				+ "\nE -> Rotate Right"
+				+ "\nC -> Hold"
 				+ "\nG -> Save"
 				+ "\nH -> Load"
 				+ "\nCRTL -> Pause");
@@ -219,9 +220,9 @@ public class Main extends Application{
 		vbxControls.setPadding(new Insets(5));  // Setting padding and spacing for elements within vbox
 		vbxControls.setSpacing(10);
 		
-		VBox vbxLeftSide = new VBox(vbxNext, vbxLabels, vbxControls);  // VBox holding all visuals on left side of tetris grid
-		vbxLeftSide.setPadding(new Insets(5));  // Setting padding and spacing for elements within vbox
-		vbxLeftSide.setSpacing(50);
+		VBox vbxLeftSide = new VBox(vbxNext, vbxLabels, vbxControls);
+		vbxLeftSide.setPadding(new Insets(5));
+		vbxLeftSide.setSpacing(35);
 		
 		// creating an hbox to serve as the root
 		HBox gameRoot = new HBox();  // An HBox to hold the game screen
@@ -358,16 +359,22 @@ public class Main extends Application{
 	/**
 	 * starts a new game
 	 */
-	private void startNewGame() {			
+	private void startNewGame() {
+		// creates a new grid with the highscore
 		grid = new Grid(highscore);
 		
+		// checks if this is the first start
 		if (fistStart) {
+			// loads from the file
 			grid.load();
 		}
 		
+		// gets the speed of the game
 		shapeSpeed = grid.getSpeed();
 		
+		// updates the cells on the grid
 		updateGridColor();
+		// creates the sequential transition
 		updateBlocks();
 	}
 	
@@ -390,29 +397,37 @@ public class Main extends Application{
 	 * moves the blocks down after a specified time
 	 */
 	private void updateBlocks() {
+		// gets the speed of the game
 		shapeSpeed = grid.getSpeed();
 				
+		// checks if this is the first launch
 		if (!fistStart) {
+			// stops the transition if not
 			animation.stop();
 		} else {
+			// sets firstStart to false
 			fistStart = false;
 		}
 		
+		// creates a new sequential transition
 		animation = new SequentialTransition();
+		// creates a new pause transition with the time specified by the game
 		PauseTransition pauseTransition = new PauseTransition(Duration.millis(shapeSpeed));
 		pauseTransition.setOnFinished(e -> {  // Only moves blocks if game is still going
+			// checks if the game is not over
 			if (!grid.getGameOver()) {
+				// moves the blocks down
 				grid.moveDown();
+				// updates the cells in the grid
 				updateGridColor();
-			} else {
-				showGameOverScreen();
-				animation.stop();
-				music.pause();
 			}
 		});
 				
+		// adds the pause transition to the sequential transition
 		animation.getChildren().add(pauseTransition);
+		// sets the cycle count to inefinete
 		animation.setCycleCount(Timeline.INDEFINITE);
+		// plays the transition
 		animation.play();
 	}
 
@@ -491,6 +506,7 @@ public class Main extends Application{
 	 * the {@code Color} of the shape
 	 */
 	private Color getColor(int type) {
+		// checks each type
 		switch (type) {
 		case 1:
 			return Color.DEEPSKYBLUE;
@@ -508,6 +524,7 @@ public class Main extends Application{
 			return Color.RED;
 		}
 		
+		// returns null else
 		return null;
 	}
 	
@@ -521,13 +538,19 @@ public class Main extends Application{
 	 * an {@code Group} containing a square with shading
 	 */
 	private Group getGroup(Color color) {
+		// a variable for the width of the shading
 		double thickness = (double) SIZE / 7.0;
 		
+		// creating a group to store everything in
 		Group group = new Group();
 		
+		// creating a polygon for the light shading
 		Polygon light = new Polygon();
+		// setting the opacity
 		light.setOpacity(0.3);
+		// setting the color
 		light.setFill(Color.WHITE);
+		// creating the points
 		light.getPoints().addAll(new Double[] {
 				0.0,0.0,
 				(double)SIZE,0.0,
@@ -537,9 +560,13 @@ public class Main extends Application{
 				0.0, (double)SIZE
 		});
 		
+		// creating a polygon for the dark shading
 		Polygon dark = new Polygon();
+		// setting the opacity
 		dark.setOpacity(0.25);
+		// setting the color
 		dark.setFill(Color.BLACK);
+		// creating the points
 		dark.getPoints().addAll(new Double[] {
 				(double)SIZE,(double)SIZE,
 				0.0,(double)SIZE,
@@ -549,12 +576,17 @@ public class Main extends Application{
 				(double)SIZE,0.0
 		});
 		
+		// creating a rectangle the size of a cell
 		Rectangle square = new Rectangle(SIZE, SIZE);
+		// setting the outline to black
 		square.setStroke(Color.BLACK);
+		// setting the color of the rectangle to the input color
 		square.setFill(color);
 		
+		// adding all the objects to the group
 		group.getChildren().addAll(square,light, dark);
 		
+		// returning the group
 		return group;
 	}
 	
@@ -568,60 +600,87 @@ public class Main extends Application{
 	 * the {@code GridPane} being updated
 	 */
 	private void updateInfoGrid(boolean typeOfGrid, GridPane gridPane) {
+		// intializing variables
 		int typeOfShape = 1;
-
 		Shape shape = null;
+		
 		Color color;
 
-		
+		// clearing the edited grid
 		gridPane.getChildren().clear();
 		
+		// checking which grid is being edited
 		if (typeOfGrid == true) {
 			if (grid.getHold() != null) {
+				// getting the shape data
 				shape = grid.getHold();
+				// getting the type data
 				typeOfShape = grid.getHold().getType();
 			}
 		} else {
 			if (grid.getNext() != null) {
+				// getting the shape data
 				shape = grid.getNext();
+				// getting the type data
 				typeOfShape = grid.getNext().getType();
 			}
 		}
 		
+		// checks if there is a shape
 		if (shape != null) {			
-			// gets the color of the block
+			// gets the color for the specified shape
 			color = getColor(typeOfShape);
 						
+			// checks if the shape isn't a square block, an s block, an l block, or a t block
 			if (typeOfShape != 4 && typeOfShape != 5 && typeOfShape != 2 && typeOfShape != 6) {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 0, 0);
 			}
 			
+			// checks if the shape isn't an l block or a j block
 			if (typeOfShape != 2 && typeOfShape != 3) {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 1, 0);
 			}
 			
+			// checks if the shape isn't a z block, a j block, or a t block
 			if (typeOfShape != 7 && typeOfShape != 3 && typeOfShape != 6) {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 2, 0);
 			}
 			
+			// checks if the shape is a line block
 			if (typeOfShape == 1) {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 3, 0);
 			} else {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 1, 1);
 			}
 			
+			// checks if the shape isn't an s block or a line block
 			if (typeOfShape != 5 && typeOfShape != 1) {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 2, 1);
 			}
 			
+			// checks if the shape isn't a line block, a z block, or a square block
 			if (typeOfShape != 1 && typeOfShape != 7 && typeOfShape != 4) {
+				// gets a group containing a rectangle with the color
 				Group group = getGroup(color);
+				// adds that group to the gridpane
 				gridPane.add(group, 0, 1);
 			}
 		}
