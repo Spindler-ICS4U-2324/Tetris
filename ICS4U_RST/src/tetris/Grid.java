@@ -10,6 +10,9 @@ import java.util.function.Predicate;
 
 /**
  * @author Jake Pommainville and Rohan Daves
+ * 
+ * this file handles all the game logic and stores all the information for it
+ * 
  * Date: today
  */
 public class Grid {

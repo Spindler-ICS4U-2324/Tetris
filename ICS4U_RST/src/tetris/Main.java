@@ -31,58 +31,59 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
+ * @version 1.0.0.0
+ * 
  * @author jake pommainville and rohan daves
  * 
- * date: 6/7/24
+ * the main file for the tetris game
+ * 
+ * date: today
  */
 public class Main extends Application{
 
-	private GridPane grdTetris;
-	private GridPane grdHold;
-	private GridPane grdNext;
+	private GridPane grdTetris; // the gridpane for the game
+	private GridPane grdHold; // a gridpane for the held shape
+	private GridPane grdNext; // a gridpane for the next shape
 	
 	private StackPane stkAllScreens;  // A stackpane which hold all the screens on the application
 	
 	private VBox vbxPauseScreen;   // HBox holding all the elements of the pause screen
 	private VBox vbxGameOverScreen;  // VBox holding all elements of game over screen
 	
-	private Grid grid;
-	private int shapeSpeed;
-	private boolean running;
-	private boolean fistStart;
+	private Grid grid; // the grid for the game
+	private int shapeSpeed; // the speed of the game
+	private boolean running; // a boolean for if the game is currenly running or paused
+	private boolean fistStart; // a boolean for if it is the games first time launching
 	
-	private MediaPlayer music;
+	private MediaPlayer music; // the music for the game
 	
-	private Label lblscore;
-	private Label lbllevel;
-	private Label lbllines;
-	private Label lblFinalScore;
-	private Label lblHighscore;
+	private Label lblscore; // a label for the score
+	private Label lbllevel; // a label for the level
+	private Label lbllines; // a label for the lines
+	private Label lblFinalScore; // a label for the final score
+	private Label lblHighscore; // a label for the highscore
 	
-	private int highscore;
+	private int highscore; // an int for the highscore
 	
-	private SequentialTransition animation;
-	PauseTransition pauseTransition;
+	private SequentialTransition animation; // the animation that moves the blocks down
 	
-	final private static int SIZE = 40;
-	final private static int SPACE = -1;
+	final private static int SIZE = 40; // the size of the cells
+	final private static int SPACE = -1; // the spacing
 	final private static int HUGE_FONT = 70;  // Font sizes used for labels within the pause and game over screens
-	final private static int MEDIUM_FONT = 25;
-	
-	Stage stage;
-	
+	final private static int MEDIUM_FONT = 25; // regular font size
+		
 	@Override
 	public void stop() {
+		// saves the game data when closed
 		grid.save();
 	}
 	
 	@Override
 	public void start(Stage stage) throws Exception {
+		// intializes the highscore to 0
 		highscore = 0;
 		stkAllScreens = new StackPane();   // This stackpane acts as the root of the application
-				
-		this.stage = stage;
-		
+						
 		try {
 			music = new MediaPlayer(new Media(Main.class.getClassLoader().getResource("music/Tetris.mp3").toURI().toString()));  // uses MediaPlayer to play music
 			music.volumeProperty().set(0.05);  // Turns the volume down
@@ -115,6 +116,7 @@ public class Main extends Application{
 			grdTetris.getRowConstraints().add(new RowConstraints(SIZE));
 		}
 		
+		// creating a label to tell the user about the held shape
 		Label lblHold = new Label("Held Shape:");
 		lblHold.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));
 		
@@ -216,10 +218,12 @@ public class Main extends Application{
 				+ "\nCRTL -> Pause");
 		lblControls.setFont(Font.font(STYLESHEET_MODENA, FontWeight.BOLD, 25));  // Setting the font, font weight, and font size of the label
 		
+		// vbox for the control labels
 		VBox vbxControls = new VBox(lblControlTitle, lblControls);  // VBox holding the label and text for the game controls
 		vbxControls.setPadding(new Insets(5));  // Setting padding and spacing for elements within vbox
 		vbxControls.setSpacing(10);
 		
+		// vbox for all the stuff on the left side of the tetris grid
 		VBox vbxLeftSide = new VBox(vbxNext, vbxLabels, vbxControls);
 		vbxLeftSide.setPadding(new Insets(5));
 		vbxLeftSide.setSpacing(35);
@@ -288,36 +292,36 @@ public class Main extends Application{
 		scene.setOnKeyPressed(e -> {   // Detects if a key is pressed on the scene
 			if (running) {   // If the game is running
 				if (e.getCode().equals(KeyCode.S)) {   
-					grid.moveDown();
+					grid.moveDown(); // moves the shape down
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.A)) {
-					grid.moveLeft();
+					grid.moveLeft(); // moves the shape left
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.D)) {
-					grid.moveRight();
+					grid.moveRight(); // moves the shape right
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.Q)) {
-					grid.rotateLeft();
+					grid.rotateLeft(); // rotates the shape left
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.E)) {
-					grid.rotateRight();
+					grid.rotateRight(); // rotates the shape right
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.C)) {
-					grid.hold();
+					grid.hold(); // holds the current shape
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.SPACE)) {
-					grid.drop();
+					grid.drop(); // hard drops the current shape
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.CONTROL)) {
-					animation.pause();
-					music.pause();
-					running = false;
-					showPauseScreen();
+					animation.pause(); // pauses the transition
+					music.pause(); // pauses the music
+					running = false; // sets running to aflse
+					showPauseScreen(); // shows the pause screen
 				} else if (e.getCode().equals(KeyCode.G)) {
-					grid.save();
+					grid.save(); // saves the game
 					updateGridColor();
 				} else if (e.getCode().equals(KeyCode.H)) {
-					grid.load();
+					grid.load(); // loads the game
 					updateGridColor();
 				}
 			} else {  // If the game is not running
@@ -341,6 +345,7 @@ public class Main extends Application{
 			}
 		});
 		
+		// sets first start to true to be used in some methods logic
 		fistStart = true;
 		
 		startNewGame();  // Initial start of the game
@@ -383,6 +388,7 @@ public class Main extends Application{
 	 * Shows the pause screen when the user clicks the pause button
 	 */
 	private void showPauseScreen() {
+		// Shows the pause screen when the user clicks the pause button
 		stkAllScreens.getChildren().add(vbxPauseScreen);
 	}
 	
@@ -390,6 +396,7 @@ public class Main extends Application{
 	 * Removes the pause screen from the stackpane
 	 */
 	private void hidePauseScreen() {
+		// Removes the pause screen from the stackpane
 		stkAllScreens.getChildren().remove(vbxPauseScreen);
 	}
 	
@@ -496,10 +503,13 @@ public class Main extends Application{
 	 * Displays the game over screen
 	 */
 	private void showGameOverScreen() {
+		// updates the game labels
 		updateLabels();
 		
+		// sets the running status to false
 		running = false;
 		
+		// adds the game over screen to the stackpane
 		stkAllScreens.getChildren().add(vbxGameOverScreen);
 	}
 	
