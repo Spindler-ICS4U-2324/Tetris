@@ -30,6 +30,53 @@ public class Shape {
 
 		createShape();
 	}
+	
+	/**
+	 * An {@code int} representing a line block
+	 */
+	private final int LINE = 1;
+	
+	
+	/**
+	 * An {@code int} representing a j block
+	 */
+	private final int LBLOCK = 2;
+	
+	/**
+	 * An {@code int} representing a line block
+	 */
+	private final int JBLOCK = 3;
+	
+	/**
+	 * An {@code int} representing a line block
+	 */
+	private final int SQUARE = 4;
+	
+	/**
+	 * An {@code int} representing a line block
+	 */
+	private final int SBLOCK = 5;
+	
+	/**
+	 * An {@code int} representing a line block
+	 */
+	private final int TBLOCK = 6;
+	
+	/**
+	 * An {@code int} representing a line block
+	 */
+	private final int ZBLOCK = 7;
+	
+	/**
+	 * An {@code int} representing a clockwise rotation
+	 */
+	private final int CLOCKWISE = 0;
+	
+	/**
+	 * An {@code int} representing a counter-clockwise rotation
+	 */
+	private final int COUNTERCLOCKWISE = 1;
+	
 
 	/**
 	 * A method which creates a shape based on the type desired. Shapes include a line block, L-block, J-block, square block, 
@@ -37,7 +84,7 @@ public class Shape {
 	 */
 	public void createShape() {
 		switch (type) {
-		case 1:    // Line block
+		case LINE:    // Line block
 			this.blocks.add(new Block(3, 0, type));  // Default coordinates (spawin coordinates) of all types of shapes
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
@@ -45,7 +92,7 @@ public class Shape {
 
 			break;
 
-		case 2:  // L-block
+		case LBLOCK:  // L-block
 			this.blocks.add(new Block(3, 1, type));
 			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(5, 1, type));
@@ -53,7 +100,7 @@ public class Shape {
 
 			break;
 
-		case 3:  // J-block
+		case JBLOCK:  // J-block
 			this.blocks.add(new Block(3, 1, type));
 			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(5, 1, type));
@@ -61,7 +108,7 @@ public class Shape {
 
 			break;
 
-		case 4:  // Square block
+		case SQUARE:  // Square block
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
 			this.blocks.add(new Block(4, 1, type));
@@ -69,7 +116,7 @@ public class Shape {
 
 			break;
 
-		case 5:  // S-block
+		case SBLOCK:  // S-block
 			this.blocks.add(new Block(3, 1, type));
 			this.blocks.add(new Block(4, 1, type));
 			this.blocks.add(new Block(4, 0, type));
@@ -77,7 +124,7 @@ public class Shape {
 
 			break;
 
-		case 6:  // T-block
+		case TBLOCK:  // T-block
 			this.blocks.add(new Block(3, 0, type));
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(5, 0, type));
@@ -85,7 +132,7 @@ public class Shape {
 
 			break;
 
-		case 7:  // Z-block
+		case ZBLOCK:  // Z-block
 			this.blocks.add(new Block(3, 0, type));
 			this.blocks.add(new Block(4, 0, type));
 			this.blocks.add(new Block(4, 1, type));
@@ -193,11 +240,11 @@ public class Shape {
 			int [] initialY = new int[4];  // Initial y-coordinate of the block
 			int increment = 0;  // Increments through initial y and x arrays
 		
-		if (blocks.get(0).getType() != 4) {   // Only rotates the shape if it isn't a square block, which doesn't need rotation
+		if (blocks.get(0).getType() != SQUARE) {   // Only rotates the shape if it isn't a square block, which doesn't need rotation
 			
 			for (Block currentBlock : blocks) {
 				
-				if (direction == 1) {  // If shape is to be rotated counterclockwise
+				if (direction == COUNTERCLOCKWISE) {  // If shape is to be rotated counterclockwise
 					initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
 					initialY[increment] = currentBlock.getY();
 				
@@ -210,7 +257,7 @@ public class Shape {
 					currentBlock.setX(translatedX + centralX);  // Adds the coordinates of the relative origin,
 					currentBlock.setY(translatedY + centralY);  // resulting in the coordinates of the rotated block on the grid
 															  
-				} else if (direction == 0) {  // If the shape is to be rotated clockwise
+				} else if (direction == CLOCKWISE) {  // If the shape is to be rotated clockwise
 					
 					initialX[increment] = currentBlock.getX();  // Puts the initial coordinates of the blocks into this array
 					initialY[increment] = currentBlock.getY();
